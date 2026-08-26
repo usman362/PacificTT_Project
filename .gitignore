@@ -1,0 +1,51 @@
+# ── Dependencies & build output ─────────────────────────────
+/vendor
+/node_modules
+/public/build
+/public/hot
+
+# ── Environment & secrets ───────────────────────────────────
+.env
+.env.*
+!.env.example
+auth.json
+
+# ── Laravel runtime ─────────────────────────────────────────
+/public/storage
+/storage/*.key
+/storage/pail
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+!/storage/framework/**/.gitkeep
+.phpunit.result.cache
+.phpunit.cache
+
+# ── Uploaded / generated content (not source) ───────────────
+/storage/app/public/signatures
+/storage/app/private
+
+# ── Editor & tooling ────────────────────────────────────────
+/.claude
+/.idea
+/.vscode
+/.zed
+/.fleet
+.phpactor.json
+*.code-workspace
+
+# ── OS noise ────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Local-only working files ────────────────────────────────
+_original/
+/public/_*.html
+npm-debug.log
+yarn-error.log
+Homestead.json
+Homestead.yaml

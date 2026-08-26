@@ -1,0 +1,28 @@
+<?php
+
+return [
+    /*
+     | Session slots offered for every program. Kept in config (not the DB)
+     | because they are fixed timetable slots, while individual dated classes
+     | are created on demand in class_sessions.
+     */
+    'session_slots' => [
+        'Weekday Morning — 7:00 AM–11:00 AM',
+        'Weekday Evening — 1:00 PM–5:00 PM',
+        'Saturday Intensive — 6:00 PM–10:00 PM',
+    ],
+
+    // Seats per dated class unless an admin overrides that class.
+    'default_capacity' => 12,
+
+    // How long checkout holds a seat before it is released.
+    'seat_hold_minutes' => (int) env('SEAT_HOLD_MINUTES', 10),
+
+    // Portion of tuition taken when the student chooses "pay deposit".
+    'deposit_percent' => 30,
+
+    // The school is closed Sundays (0 = Sunday, matching Carbon::dayOfWeek).
+    'closed_weekdays' => [0],
+
+    'admin_email' => env('MAIL_ADMIN_ADDRESS', 'admin@pacifictradetech.com'),
+];

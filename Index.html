@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Industrial Controls Academy — Enrollment</title>
+<style>
+:root{--bg:#070b11;--card:#101925;--line:#293a4d;--txt:#f5f7fa;--muted:#8ea0b5;--a:#ffad00;--a2:#ff7900}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 80% 0,#31200055,transparent 28%),linear-gradient(135deg,#06090e,#0b121c);color:var(--txt);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:14px}
+header{position:sticky;top:8px;z-index:20;display:flex;align-items:center;gap:18px;padding:11px 14px;border:1px solid #ffffff12;border-radius:16px;background:#080d15df;backdrop-filter:blur(16px);box-shadow:0 15px 35px #0005}
+.brand{font-weight:900;white-space:nowrap}.brand span{color:var(--a)}
+.progress{flex:1}.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-bottom:5px}.bar{height:6px;border-radius:10px;background:#1b2836;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--a2),var(--a));transition:.3s;box-shadow:0 0 15px #ff9d00}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;padding:65px 10px 45px}
+.eyebrow{font-size:11px;color:var(--a);font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+h1{font-size:clamp(42px,7vw,76px);line-height:.93;letter-spacing:-.055em;margin:10px 0 16px}
+.hero p{max-width:570px;color:#a4b2c3;line-height:1.55;margin:0 0 20px}
+.start,.next,.submit{border:0;border-radius:12px;background:linear-gradient(145deg,#ffd149,#ff8b00);color:#101010;font-weight:950;padding:13px 18px;cursor:pointer;box-shadow:0 12px 28px #ff970025;text-decoration:none;display:inline-block}
+.plc{height:280px;border:1px solid #314357;border-radius:24px;background:linear-gradient(145deg,#182535,#080d14);position:relative;overflow:hidden;box-shadow:24px 28px 45px #0008,inset 1px 1px #ffffff10;transform:perspective(1000px) rotateY(-7deg) rotateX(3deg)}
+.rail{position:absolute;left:8%;right:8%;top:52%;height:10px;background:linear-gradient(#d5dce1,#65717b,#e1e5e8);box-shadow:0 8px 15px #0008}
+.mod{position:absolute;top:25%;height:46%;width:18%;border-radius:5px;background:linear-gradient(145deg,#233244,#0c141e);border:1px solid #415268;box-shadow:10px 12px 18px #0009}
+.mod:nth-of-type(2){left:11%}.mod:nth-of-type(3){left:31%}.mod:nth-of-type(4){left:51%}.mod:nth-of-type(5){left:71%}
+.mod:before{content:"••••";position:absolute;top:16px;left:12px;color:var(--a);letter-spacing:4px;text-shadow:0 0 8px var(--a)}
+.mod:after{content:"I/O";position:absolute;bottom:12px;left:12px;color:#74879b;font-size:10px}
+.enroll-title{text-align:center;padding:20px 0 14px}.enroll-title h2{font-size:34px;margin:6px 0}.enroll-title p{color:var(--muted);margin:0}
+.form{scroll-margin-top:90px;max-width:650px;margin:0 auto 70px;padding:14px;border:1px solid #293b50;border-radius:22px;background:linear-gradient(145deg,#121d2a,#080e16);box-shadow:0 28px 60px #0008}
+.step{display:none;min-height:310px;padding:32px 22px;flex-direction:column;justify-content:center;animation:stepIn .34s ease}.step.active{display:flex}@keyframes stepIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+.num{color:var(--a);font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+label{font-size:26px;font-weight:900;letter-spacing:-.025em;margin:7px 0 14px}
+input,select{width:100%;height:52px;border-radius:11px;border:1px solid #31465d;background:#09111a;color:white;padding:0 14px;font-size:16px;outline:none}
+input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px #ffad0017}
+.actions{display:flex;justify-content:flex-end;margin-top:12px}.next{padding:10px 15px;font-size:13px}
+.note{font-size:11px;color:#6f8297;margin-top:8px}
+.availability{margin-top:12px;padding:13px 14px;border-radius:11px;border:1px solid #31465d;background:#0b1520;color:#aab8c8;font-weight:800;font-size:13px}
+.availability.open{border-color:#3d7656;color:#79d79b;background:#0c1b15}
+.availability.closed{border-color:#783e3e;color:#ff8b8b;background:#1b0e10}
+.week{display:flex;justify-content:space-between;gap:8px;margin-top:9px;font-size:10px;font-weight:900;letter-spacing:.08em;color:#79d79b}.week .closed{color:#ff8585}
+.done{display:none;text-align:center;padding:45px 20px;min-height:310px}.done.active{display:block;animation:stepIn .34s ease}.check{width:62px;height:62px;margin:auto;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#ffd34d,#ff8500);color:#111;font-size:30px;font-weight:900;box-shadow:0 12px 28px #ff9d0030}
+.done h2{margin-bottom:7px}.done p{color:var(--muted);font-size:13px}
+
+
+
+.hero-slider{position:relative;margin-top:24px;width:100%;max-width:610px;overflow:hidden;border:1px solid #314357;border-radius:20px;background:#080e16;box-shadow:22px 26px 45px #0008}
+.slider-track{display:flex;transition:transform .65s cubic-bezier(.22,.8,.25,1)}
+.slide{min-width:100%;position:relative;aspect-ratio:2/1;overflow:hidden}
+.slide img{width:100%;height:100%;object-fit:cover;display:block}
+.slide:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,#050a11e8 100%)}
+.slide-caption{position:absolute;z-index:2;left:18px;bottom:15px}.slide-caption b{display:block;font-size:18px}.slide-caption span{display:block;margin-top:3px;color:#b2c0cf;font-size:11px}
+.slider-btn{position:absolute;z-index:4;top:50%;transform:translateY(-50%);width:38px;height:38px;border:1px solid #ffffff28;border-radius:50%;background:#08111ddd;color:white;font-size:23px;cursor:pointer}.slider-prev{left:10px}.slider-next{right:10px}
+.slider-dots{position:absolute;z-index:4;right:14px;bottom:16px;display:flex;gap:6px}.slider-dot{width:7px;height:7px;border:0;border-radius:50%;padding:0;background:#7b8997;cursor:pointer}.slider-dot.active{background:#ffad00;box-shadow:0 0 8px #ffad00}
+@media(max-width:720px){.hero-slider{max-width:none;margin-top:18px}.slide-caption b{font-size:15px}}
+
+.compare{max-width:980px;margin:0 auto;padding:42px 10px 55px;scroll-margin-top:85px}
+.compare-head{text-align:center;margin-bottom:20px}.compare-head h2{font-size:clamp(30px,5vw,46px);margin:7px 0}.compare-head p{color:var(--muted);margin:0}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.program-card{border:1px solid #2c4055;border-radius:20px;background:linear-gradient(145deg,#121d2a,#080e16);overflow:hidden;box-shadow:0 22px 45px #0006;position:relative}
+.program-card.featured{border-color:#9d6b0d;box-shadow:0 22px 50px #0007,0 0 0 1px #ffad0025}
+.badge{position:absolute;right:14px;top:14px;background:linear-gradient(145deg,#ffd149,#ff8b00);color:#111;border-radius:30px;padding:5px 9px;font-size:9px;font-weight:950;letter-spacing:.08em}
+.pc-head{padding:22px 20px 17px;border-bottom:1px solid #26384a}.pc-head h3{font-size:23px;margin:5px 0}.price{font-size:30px;font-weight:950;color:var(--a)}.price small{font-size:11px;color:#788ba0;font-weight:700}
+.features{padding:10px 18px 16px}.feature{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid #1c2a38;color:#a9b7c7;font-size:13px}.feature:last-child{border:0}
+.yes,.no{font-size:17px;font-weight:950}.yes{color:#69d28e}.no{color:#ff7777}
+.choose{display:block;width:calc(100% - 36px);margin:0 18px 18px;border:0;border-radius:12px;padding:13px;background:#172536;color:#fff;font-weight:900;cursor:pointer}.featured .choose{background:linear-gradient(145deg,#ffd149,#ff8b00);color:#111}
+@media(max-width:680px){.compare-grid{grid-template-columns:1fr}.program-card{border-radius:16px}}
+
+.checkout{display:none;max-width:760px;margin:0 auto 70px;padding:18px;border:1px solid #293b50;border-radius:22px;background:linear-gradient(145deg,#121d2a,#080e16);box-shadow:0 28px 60px #0008}
+.checkout.active{display:block;animation:stepIn .35s ease}
+.checkout-head{text-align:center;padding:18px 10px 24px}.checkout-head h2{font-size:34px;margin:7px 0}.checkout-head p{color:var(--muted);margin:0}
+.order{padding:17px;border:1px solid #2c4055;border-radius:14px;background:#09111a;margin-bottom:16px}
+.order-row{display:flex;justify-content:space-between;gap:15px;padding:8px 0;color:#a9b8c8}.order-row strong{color:#fff;text-align:right}.order-row.total{border-top:1px solid #2b3b4d;margin-top:7px;padding-top:14px;font-size:18px}.order-row.total strong{color:var(--a)}
+.pay-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pay-card{position:relative;border:1px solid #31465d;border-radius:15px;background:#0a121c;padding:18px;cursor:pointer;transition:.2s}
+.pay-card:hover,.pay-card.selected{border-color:var(--a);box-shadow:0 0 0 3px #ffad0012}
+.pay-card input{position:absolute;opacity:0;pointer-events:none}.pay-title{font-size:18px;font-weight:900;margin-bottom:7px}.pay-desc{font-size:12px;line-height:1.5;color:#8fa1b5}
+.deposit{display:none;margin-top:15px;padding:15px;border-radius:13px;border:1px solid #744d15;background:#1b1408;color:#f2c86b;font-size:12px;line-height:1.55}.deposit.show{display:block}
+.card-fields{display:none;margin-top:15px}.card-fields.show{display:block}.card-fields .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card-fields input{margin-bottom:10px}
+.checkout-action{width:100%;margin-top:16px;border:0;border-radius:13px;padding:16px;background:linear-gradient(145deg,#ffd149,#ff8b00);color:#111;font-weight:950;font-size:15px;cursor:pointer}
+.secure{text-align:center;color:#66798e;font-size:10px;margin-top:10px}
+@media(max-width:620px){.pay-options{grid-template-columns:1fr}.checkout{padding:10px}.card-fields .grid{grid-template-columns:1fr}}
+
+@media(max-width:720px){
+ .wrap{padding:8px}.brand{font-size:12px}.hero{grid-template-columns:1fr;padding:48px 8px 28px}.plc{height:220px;transform:perspective(800px) rotateY(-3deg) rotateX(2deg)}
+ .enroll-title h2{font-size:28px}.form{padding:8px;border-radius:17px}.step{min-height:250px;padding:25px 14px}label{font-size:23px}
+}
+
+.site-footer{text-align:center;padding:28px 14px 38px;color:#73869a;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.site-footer strong{color:#aab7c5}
+.site-footer .tm{font-size:8px;vertical-align:super;margin-left:2px}
+.site-footer .contact{margin-top:8px;color:#aab7c5;font-size:11px;letter-spacing:.06em;text-transform:none}.site-footer .contact a{color:#ffad00;text-decoration:none;font-weight:900}
+
+
+.seat-timer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 16px;padding:14px 16px;border:1px solid #744d15;border-radius:14px;background:#1b1408}
+.seat-timer-copy{font-size:11px;line-height:1.4;color:#d2b06b}.seat-timer-copy strong{display:block;color:#fff;font-size:13px;margin-bottom:2px}
+.seat-clock{font-variant-numeric:tabular-nums;font-size:27px;font-weight:950;color:#ffad00;letter-spacing:.04em;white-space:nowrap}
+.expired-overlay{display:none;position:fixed;inset:0;z-index:999;background:#05090ef2;align-items:center;justify-content:center;padding:20px}
+.expired-overlay.show{display:flex}.expired-box{max-width:480px;width:100%;padding:28px;border:1px solid #783e3e;border-radius:20px;background:#101925;text-align:center;box-shadow:0 30px 80px #000}
+.expired-box .expire-icon{width:64px;height:64px;border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;background:#261012;color:#ff8585;font-size:28px}.expired-box h2{margin:0 0 8px}.expired-box p{color:#9aacbd;line-height:1.55;font-size:13px}.expired-box button{margin-top:13px;border:0;border-radius:12px;padding:14px 18px;background:linear-gradient(145deg,#ffd149,#ff8b00);color:#111;font-weight:950;cursor:pointer}
+
+
+.verify-section{max-width:980px;margin:0 auto 65px;padding:38px 14px;border-top:1px solid #1e2b39}
+.verify-head{text-align:center;max-width:690px;margin:0 auto 22px}.verify-head h2{font-size:clamp(28px,5vw,42px);margin:7px 0 10px}.verify-head p{color:#8fa1b5;line-height:1.55;margin:0}
+.verify-box{max-width:700px;margin:auto;padding:18px;border:1px solid #2c4055;border-radius:18px;background:linear-gradient(145deg,#121d2a,#080e16)}
+.verify-label{display:block;font-size:12px;font-weight:900;color:#dce5ee;margin-bottom:8px}
+.verify-search{display:grid;grid-template-columns:1fr auto;gap:9px}.verify-search input{height:50px}.verify-search button{border:0;border-radius:11px;padding:0 19px;background:linear-gradient(145deg,#ffd149,#ff8b00);color:#111;font-weight:950;cursor:pointer}
+.verify-help{color:#697d92;font-size:10px;margin:9px 2px 0;line-height:1.45}
+.verify-result{display:none;margin-top:15px;padding:16px;border:1px solid #31465d;border-radius:14px;background:#09111a}.verify-result.show{display:block}.student-result{display:grid;grid-template-columns:82px 1fr;gap:15px;align-items:center}
+.student-photo{width:82px;height:82px;border-radius:13px;background:linear-gradient(145deg,#24374b,#0e1722);display:grid;place-items:center;color:#71859a;font-size:27px;border:1px solid #35495f;overflow:hidden}.student-photo img{width:100%;height:100%;object-fit:cover}
+.student-info h3{margin:0 0 5px;font-size:18px}.verified-badge{display:inline-block;padding:4px 7px;border-radius:20px;background:#10271b;color:#71d894;font-size:9px;font-weight:950;letter-spacing:.08em}.student-meta{margin-top:9px;color:#9aabba;font-size:11px;line-height:1.65}
+.not-found{color:#ff9898;font-size:12px;line-height:1.5}
+@media(max-width:560px){.verify-search{grid-template-columns:1fr}.verify-search button{height:48px}.student-result{grid-template-columns:65px 1fr}.student-photo{width:65px;height:65px}}
+
+
+/* REQUIRED STUDENT WAIVER */
+.waiver{display:none;max-width:820px;margin:0 auto 70px;padding:18px;border:1px solid #293b50;border-radius:22px;background:linear-gradient(145deg,#121d2a,#080e16);box-shadow:0 28px 60px #0008}.waiver.active{display:block;animation:stepIn .35s ease}.waiver-head{text-align:center;padding:14px 8px 20px}.waiver-head h2{font-size:30px;margin:6px 0}.waiver-head p{color:var(--muted);font-size:12px;line-height:1.55}.waiver-scroll{max-height:360px;overflow:auto;padding:16px;border:1px solid #2c4055;border-radius:14px;background:#09111a;font-size:12px;line-height:1.6;color:#aebccc}.waiver-scroll h3{color:#fff;font-size:14px;margin:18px 0 5px}.waiver-scroll h3:first-child{margin-top:0}.waiver-scroll strong{color:#fff}.waiver-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.waiver-grid .full{grid-column:1/-1}.waiver-grid label{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8ea0b5;margin:0 0 5px}.waiver-grid input{height:46px}.waiver-check{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:12px;border:1px solid #2c4055;border-radius:12px;background:#0a121c;font-size:11px;color:#aebccc;line-height:1.5}.waiver-check input{width:18px;height:18px;flex:0 0 auto;margin-top:1px}.sig-wrap{margin-top:14px}.sig-label{font-size:11px;font-weight:900;color:#dce5ee;margin-bottom:7px}.signature-pad{width:100%;height:150px;display:block;border:1px solid #31465d;border-radius:12px;background:#fff;touch-action:none}.sig-actions{display:flex;justify-content:space-between;align-items:center;margin-top:7px}.sig-actions button{border:0;background:transparent;color:#ffad00;font-weight:900;cursor:pointer}.stamp{font-size:10px;color:#74879b}.inhouse{margin-top:16px;padding:14px;border:1px dashed #516274;border-radius:12px;color:#8495a7;font-size:11px}.inhouse strong{color:#c9d3dc}.waiver-error{display:none;margin-top:12px;color:#ff8b8b;font-size:11px;font-weight:800}.waiver-action{width:100%;margin-top:14px;border:0;border-radius:13px;padding:15px;background:linear-gradient(145deg,#ffd149,#ff8b00);color:#111;font-weight:950;cursor:pointer}@media(max-width:620px){.waiver{padding:10px}.waiver-grid{grid-template-columns:1fr}.waiver-grid .full{grid-column:auto}.waiver-scroll{max-height:310px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div class="brand"><span>⚡</span> CONTROLS ACADEMY</div>
+ <div class="progress"><div class="meta"><span>ENROLLMENT</span><b id="pct">0%</b></div><div class="bar"><div class="fill" id="fill"></div></div></div>
+</header>
+
+<section class="hero">
+ <div><div class="eyebrow">Industrial electrical + PLC training</div><h1>BUILD.<br>WIRE.<br>PROGRAM.</h1><p>Tell us about your experience and training goals. The form advances one step at a time and tracks your enrollment progress.</p><div style="margin:16px 0 18px;font-weight:800;letter-spacing:.04em">Questions? <a href="tel:18000000000" style="color:inherit;text-decoration:none;border-bottom:2px solid currentColor"><a href="tel:+18009974607">1(800)997-4607</a></div><a href="#enrollmentForm" class="start">START ENROLLMENT →</a></div>
+ 
+<div class="hero-slider" id="heroSlider">
+ <div class="slider-track" id="sliderTrack">
+  <div class="slide"><img src="plc_slide_1.jpg" alt="PLC fundamentals training"><div class="slide-caption"><b>01 · PLC Fundamentals</b><span>Hardware, I/O and controller fundamentals</span></div></div>
+  <div class="slide"><img src="plc_slide_2.jpg" alt="Industrial electrical controls"><div class="slide-caption"><b>02 · Electrical Controls</b><span>Industrial wiring, relays and contactors</span></div></div>
+  <div class="slide"><img src="plc_slide_3.jpg" alt="HMI design and programming"><div class="slide-caption"><b>03 · HMI Design & Programming</b><span>Operator interfaces and process visualization</span></div></div>
+  <div class="slide"><img src="plc_slide_4.jpg" alt="Industrial automation systems"><div class="slide-caption"><b>04 · Automation & Systems</b><span>Integrated industrial automation applications</span></div></div>
+  <div class="slide"><img src="plc_slide_5.jpg" alt="PLC programming project"><div class="slide-caption"><b>05 · Real-World Projects</b><span>Apply programming skills to industrial projects</span></div></div>
+ </div>
+ <button class="slider-btn slider-prev" id="sliderPrev" type="button" aria-label="Previous slide">‹</button>
+ <button class="slider-btn slider-next" id="sliderNext" type="button" aria-label="Next slide">›</button>
+ <div class="slider-dots" id="sliderDots"></div>
+</div>
+
+</section>
+
+
+<section class="compare" id="compare">
+ <div class="compare-head">
+  <div class="eyebrow">Choose your training path</div>
+  <h2>Compare Programs</h2>
+  <p>See exactly what is included before starting enrollment.</p>
+ </div>
+ <div class="compare-grid">
+  <article class="program-card">
+   <div class="pc-head"><div class="eyebrow">Core Program</div><h3>PLC + Electrical Controls</h3><div class="price">$1,495 <small>/ STUDENT</small></div></div>
+   <div class="features">
+    <div class="feature"><span class="yes">✓</span><span>Industrial electrical fundamentals</span></div>
+    <div class="feature"><span class="yes">✓</span><span>Control wiring & schematics</span></div>
+    <div class="feature"><span class="yes">✓</span><span>PLC hardware & I/O fundamentals</span></div>
+    <div class="feature"><span class="yes">✓</span><span>Ladder logic programming</span></div>
+    <div class="feature"><span class="yes">✓</span><span>Timers, counters & interlocks</span></div>
+    <div class="feature"><span class="yes">✓</span><span>Hands-on troubleshooting exercises</span></div>
+    <div class="feature"><span class="no">✕</span><span>Advanced analog / process control</span></div>
+    <div class="feature"><span class="no">✕</span><span>Advanced automation sequencing</span></div>
+    <div class="feature"><span class="no">✕</span><span>HMI design & programming</span></div>
+   </div>
+  </article>
+
+  <article class="program-card featured">
+   <div class="badge">ADVANCED</div>
+   <div class="pc-head"><div class="eyebrow">Advanced Program</div><h3>Advanced PLC / Automation</h3><div class="price">$2,500 <small>/ STUDENT</small></div></div>
+   <div class="features">
+    <div class="feature"><span class="yes">✓</span><span>Industrial electrical fundamentals</span></div>
+    <div class="feature"><span class="yes">✓</span><span>Control wiring & schematics</span></div>
+    <div class="feature"><span class="yes">✓</span><span>PLC hardware & I/O fundamentals</span></div>
+    <div class="feature"><span class="yes">✓</span><span>Ladder logic programming</span></div>
+    <div class="feature"><span class="yes">✓</span><span>Timers, counters & interlocks</span></div>
+    <div class="feature"><span class="yes">✓</span><span>Hands-on troubleshooting exercises</span></div>
+    <div class="feature"><span class="yes">✓</span><span>Advanced analog / process control</span></div>
+    <div class="feature"><span class="yes">✓</span><span>Advanced automation sequencing</span></div>
+    <div class="feature"><span class="yes">✓</span><span>HMI design & programming</span></div>
+   </div>
+  </article>
+ </div>
+</section>
+
+
+<section class="enroll-title"><div class="eyebrow">Quick enrollment</div><h2>Let's get you scheduled.</h2><p>Complete each requirement to move forward.</p></section>
+
+<form class="form" id="enrollmentForm" onsubmit="return false">
+ <section class="step active" id="s1"><div class="num">01 / 08</div><label for="name">What's your name?</label><input id="name" data-field placeholder="First and last name" autocomplete="name"><div class="actions"><button class="next" type="button">CONTINUE →</button></div></section>
+ <section class="step" id="s2"><div class="num">02 / 08</div><label for="phone">Best phone number?</label><input id="phone" data-field type="tel" placeholder="(555) 555-5555" autocomplete="tel"><div class="actions"><button class="next" type="button">CONTINUE →</button></div></section>
+ <section class="step" id="s3"><div class="num">03 / 08</div><label for="email">What's your email?</label><input id="email" data-field type="email" placeholder="you@example.com" autocomplete="email"><div class="actions"><button class="next" type="button">CONTINUE →</button></div></section>
+ <section class="step" id="s4"><div class="num">04 / 08</div><label for="electrical">Electrical experience</label><select id="electrical" data-field><option value="">Select level</option><option>None — starting from zero</option><option>Basic — tools, wiring, meters</option><option>Intermediate — commercial / industrial</option><option>Advanced — electrician / technician</option></select><div class="note">Selecting an option automatically advances.</div></section>
+ <section class="step" id="s5"><div class="num">05 / 08</div><label for="plcexp">PLC experience</label><select id="plcexp" data-field><option value="">Select level</option><option>None</option><option>Basic ladder logic</option><option>Some field experience</option><option>Experienced programmer / technician</option></select></section>
+ <section class="step" id="s6"><div class="num">06 / 08</div><label for="program">Desired program</label><select id="program" data-field>
+<option value="">Choose program</option>
+<option>PLC + Electrical Controls — $1,495</option>
+<option>Advanced PLC / Automation — $2,500</option>
+</select>
+<div class="note">Program pricing shown for enrollment selection.</div></section>
+ <section class="step" id="s7"><div class="num">07 / 08</div><label for="session">Preferred session</label><select id="session" data-field>
+<option value="">Choose session</option>
+<option>Weekday Morning — 7:00 AM–11:00 AM</option>
+<option>Weekday Evening — 1:00 PM–5:00 PM</option>
+<option>Saturday Intensive — 6:00 PM–10:00 PM</option>
+</select></section>
+ <section class="step" id="s8"><div class="num">08 / 08</div><label for="date">Preferred start date</label><input id="date" data-field type="date">
+<div id="availability" class="availability">Select a date to view availability.</div>
+<div class="week"><span>MON–SAT OPEN</span><span class="closed">SUN CLOSED</span></div>
+<div class="actions"><button class="next" type="button">COMPLETE →</button></div></section>
+ <section class="done" id="complete"><div class="check">✓</div><h2>Enrollment request ready.</h2><p>Mockup only — no information is submitted.</p><button class="submit" id="checkoutBtn" type="button">CONTINUE TO CHECKOUT →</button></section>
+</form>
+
+
+<section class="waiver" id="waiver">
+ <div class="waiver-head"><div class="eyebrow">Required before checkout</div><h2>Student Training Waiver & Acknowledgment</h2><p>Review, complete, and sign below. Checkout remains locked until this acknowledgment is completed.</p></div>
+ <div class="waiver-scroll">
+  <h3>PACIFIC TRADE TECH™ — Training Disclosure</h3>
+  <strong>Private, non-degree vocational training.</strong> Each enrollment is one standalone four (4) hour course. Instruction may include PLC, electrical controls, automation, and HMI topics. Core total charges are <strong>$1,495</strong>; Advanced total charges are <strong>$2,500</strong>. No state/federal student financial aid is offered or accepted for these programs. Successful completion may result in a <strong>Certificate of Completion only</strong>. Public enrollment is permitted. Repeat visits/training are separate paid enrollments.
+  <h3>Nature of Training & Assumption of Risk</h3>
+  I understand that hands-on industrial training may involve PLCs, HMIs, control panels, relays, contactors, power supplies, motors, VFDs, sensors, actuators, pneumatic devices, electrical conductors, test instruments, tools, machinery, and energized or de-energized training equipment. Risks may include electrical shock or burns, cuts, pinch/crush hazards, moving equipment, stored pneumatic/mechanical energy, slips/falls, tool injuries, equipment malfunction, property damage, serious bodily injury, and in rare circumstances death. I voluntarily participate and assume inherent and reasonably foreseeable risks to the extent permitted by California law.
+  <h3>Safety Responsibilities</h3>
+  I will follow instructor directions, posted rules, PPE requirements, and applicable lockout/tagout procedures. I will not energize, operate, modify, connect, disconnect, troubleshoot, bypass safeguards, or repair equipment unless specifically authorized. I will immediately report unsafe conditions, injuries, damaged equipment, and near misses. I will not participate while impaired or engage in reckless conduct or horseplay.
+  <h3>Release / Limitation of Liability</h3>
+  To the fullest extent permitted by California law, I release PACIFIC TRADE TECH™, its operating entity, affiliated entities, owners, members, managers, officers, employees, instructors, agents, landlords, and authorized representatives from claims arising from ordinary inherent risks of my voluntary participation that may lawfully be released. Nothing here waives liability or student rights that cannot legally be waived, including rights arising from fraud, willful injury, violations of law, or other non-waivable statutory rights.
+  <h3>Damage, Medical Response & Personal Property</h3>
+  I may be held financially responsible, to the extent permitted by law, for physical damage caused by intentional misconduct, vandalism, unauthorized use, or reckless misuse. Normal wear or ordinary equipment failure is not my responsibility. I authorize staff to contact emergency medical services when reasonably necessary and understand I remain responsible for my medical expenses except where another party is legally responsible. I am responsible for safeguarding personal property, subject to applicable law.
+  <h3>Certificate / No Employment or License Guarantee</h3>
+  A PACIFIC TRADE TECH™ Certificate of Completion is not an academic degree, California contractor license, electrician certification, professional license, occupational license, or governmental credential. Training does not guarantee employment, wages, promotion, licensing, third-party certification, or employer acceptance.
+  <h3>Attendance, Payment, Cancellation & Refund Rights</h3>
+  Enrollment is for the selected four-hour session. A Certificate of Completion may require attendance, participation, required exercises, and safety compliance. Any cancellation, withdrawal, refund, or other student rights required by applicable California law control over conflicting terms. Nothing in this acknowledgment waives non-waivable statutory rights.
+  <h3>Training Materials & Records</h3>
+  PACIFIC TRADE TECH™ training materials may be protected intellectual property and may not be commercially reproduced, sold, published, distributed, uploaded, sublicensed, or represented as the student's own without authorization, except where law provides otherwise. PACIFIC TRADE TECH™ may retain records needed to document enrollment and authenticate Certificates of Completion, subject to applicable privacy law and authorizations.
+ </div>
+ <div class="waiver-grid">
+  <div><label>Student full legal name *</label><input id="waiverName" autocomplete="name"></div>
+  <div><label>Phone *</label><input id="waiverPhone" type="tel" autocomplete="tel"></div>
+  <div class="full"><label>Address *</label><input id="waiverAddress" autocomplete="street-address" placeholder="Street address, city, state, ZIP"></div>
+  <div><label>Emergency contact *</label><input id="waiverEmergency" placeholder="Full name"></div>
+  <div><label>Emergency phone *</label><input id="waiverEmergencyPhone" type="tel"></div>
+  <div><label>Selected program</label><input id="waiverProgram" readonly></div>
+  <div><label>Scheduled date / session</label><input id="waiverSchedule" readonly></div>
+ </div>
+ <label class="waiver-check"><input id="waiverAgree" type="checkbox"><span>I have read and understand this entire Student Training Waiver & Acknowledgment, had an opportunity to ask questions, understand the risks and program limitations, and voluntarily agree to its terms. <strong>* Required</strong></span></label>
+ <label class="waiver-check"><input id="photoConsent" type="checkbox"><span><strong>Optional photo/publicity consent:</strong> I authorize PACIFIC TRADE TECH™ to photograph or record me during training and use my image for educational or promotional purposes. Leaving this unchecked does not affect enrollment.</span></label>
+ <div class="sig-wrap"><div class="sig-label">STUDENT SIGNATURE * — sign inside the box</div><canvas id="signaturePad" class="signature-pad"></canvas><div class="sig-actions"><button id="clearSignature" type="button">CLEAR SIGNATURE</button><span class="stamp">Signed: <b id="studentStamp">Not signed</b></span></div></div>
+ <div class="inhouse"><strong>PACIFIC TRADE TECH™ ACCEPTANCE — IN-HOUSE USE ONLY</strong><br>Representative: ______________________________ &nbsp;&nbsp; Signature: ______________________________<br>Date/Time: ______________________________</div>
+ <div class="waiver-error" id="waiverError">Complete all required fields, accept the acknowledgment, and provide your signature before continuing.</div>
+ <button class="waiver-action" id="waiverContinue" type="button">ACCEPT & CONTINUE TO CHECKOUT →</button>
+</section>
+
+<section class="checkout" id="checkout">
+ <div class="seat-timer" id="seatTimer">
+  <div class="seat-timer-copy"><strong>Your seat is temporarily reserved</strong>Complete checkout before the reservation expires.</div>
+  <div class="seat-clock" id="seatClock">10:00</div>
+ </div>
+ <div class="checkout-head">
+  <div class="eyebrow">Step 2 — Checkout</div>
+  <h2>Reserve your seat.</h2>
+  <p>Choose how you would like to pay.</p>
+ </div>
+
+ <div class="order">
+  <div class="order-row"><span>Program</span><strong id="coProgram">—</strong></div>
+  <div class="order-row"><span>Session</span><strong id="coSession">—</strong></div>
+  <div class="order-row"><span>Start date</span><strong id="coDate">—</strong></div>
+  <div class="order-row total"><span>Program total</span><strong id="coTotal">$0.00</strong></div>
+ </div>
+
+ <div class="pay-options">
+  <label class="pay-card" id="fullCard">
+   <input type="radio" name="payment" value="full">
+   <div class="pay-title">💳 Pay by Credit Card</div>
+   <div class="pay-desc">Pay the full program tuition today and secure your enrollment.</div>
+  </label>
+
+  <label class="pay-card" id="onsiteCard">
+   <input type="radio" name="payment" value="onsite">
+   <div class="pay-title">🏫 Pay Balance Onsite</div>
+   <div class="pay-desc">Pay a 30% deposit today. The remaining 70% is due onsite.</div>
+  </label>
+ </div>
+
+ <div class="deposit" id="depositNotice">
+  <strong>30% DEPOSIT REQUIRED TODAY</strong><br>
+  The deposit is non-refundable for a no-show or cancellation. The remaining 70% balance is due onsite before training.
+  <div class="order-row" style="padding-bottom:0"><span>Due today</span><strong id="dueToday">$0.00</strong></div>
+  <div class="order-row" style="padding-bottom:0"><span>Due onsite</span><strong id="dueOnsite">$0.00</strong></div>
+ </div>
+
+ <div class="card-fields" id="cardFields">
+  <input placeholder="Cardholder name">
+  <input placeholder="Card number" inputmode="numeric">
+  <div class="grid"><input placeholder="MM / YY" inputmode="numeric"><input placeholder="CVC" inputmode="numeric"></div>
+ </div>
+
+ <button class="checkout-action" id="payBtn" type="button">SELECT PAYMENT METHOD</button>
+ <div class="secure">Checkout mockup only — no card information is transmitted or processed.</div>
+</section>
+
+</div>
+
+<section class="verify-section" id="graduateVerification">
+ <div class="verify-head">
+  <div class="eyebrow">PACIFIC TRADE TECH Graduate Registry</div>
+  <h2>Verify a Course Completion</h2>
+  <p>Confirm whether a student has successfully completed recognized training through PACIFIC TRADE TECH. Search the public graduate registry by student name or Certificate of Completion number.</p>
+ </div>
+ <div class="verify-box">
+  <label class="verify-label" for="graduateSearch">Student Name or Certificate Number</label>
+  <div class="verify-search">
+   <input id="graduateSearch" type="search" placeholder="Example: John Smith or PTT-2026-00124">
+   <button id="graduateSearchBtn" type="button">VERIFY RECORD →</button>
+  </div>
+  <div class="verify-help">Public results may display the student's photo, completion date, recognized course(s), and certificate number. Mockup registry only.</div>
+  <div class="verify-result" id="graduateResult" aria-live="polite"></div>
+ </div>
+</section>
+
+<footer class="site-footer"><strong>PACIFIC TRADE TECH<span class="tm">™</span></strong> &nbsp; © 2026<div class="contact">Enrollment &amp; Course Information &nbsp;•&nbsp; <a href="tel:+18009974607">1(800)997-4607</a></div></footer>
+
+
+<div class="expired-overlay" id="expiredOverlay">
+ <div class="expired-box">
+  <div class="expire-icon">⌛</div>
+  <h2>Your seat reservation expired.</h2>
+  <p>The selected seat is no longer being held. Please redo the enrollment form and verify current date and seat availability before returning to checkout.</p>
+  <button id="restartEnrollment" type="button">CHECK AVAILABILITY AGAIN →</button>
+ </div>
+</div>
+
+<script>
+
+const fields=[...document.querySelectorAll('[data-field]')];
+const steps=[...document.querySelectorAll('.step')];
+const done=document.getElementById('complete');
+const fill=document.getElementById('fill');
+const pct=document.getElementById('pct');
+const dateField=document.getElementById('date');
+const availability=document.getElementById('availability');
+let current=0;
+
+function updateProgress(){
+  const completed=fields.filter(f=>f.value.trim()!=="").length;
+  const p=Math.round((completed/fields.length)*100);
+  fill.style.width=p+"%";
+  pct.textContent=p+"%";
+}
+
+function showStep(index){
+  steps.forEach((step,i)=>step.classList.toggle('active',i===index));
+  done.classList.remove('active');
+  current=index;
+  window.scrollTo({top:document.querySelector('.enroll-title').offsetTop-70,behavior:'smooth'});
+  setTimeout(()=>fields[index].focus({preventScroll:true}),350);
+}
+
+function validCurrent(){
+  const field=fields[current];
+  if(field===dateField && field.value){
+    const d=new Date(field.value+"T12:00:00");
+    if(d.getDay()===0) return false;
+  }
+  return field.value.trim()!=="";
+}
+
+function next(){
+  const field=fields[current];
+  if(!validCurrent()){
+    field.focus();
+    field.style.borderColor="#ffad00";
+    setTimeout(()=>field.style.borderColor="",700);
+    return;
+  }
+  updateProgress();
+  if(current < steps.length-1){
+    showStep(current+1);
+  }else{
+    steps[current].classList.remove('active');
+    done.classList.add('active');
+    fill.style.width="100%";
+    pct.textContent="100%";
+  }
+}
+
+document.querySelectorAll('.next').forEach(btn=>btn.addEventListener('click',next));
+
+fields.forEach(field=>{
+  field.addEventListener('input',updateProgress);
+  field.addEventListener('keydown',e=>{
+    if(e.key==="Enter"){e.preventDefault();next();}
+  });
+  if(field.tagName==="SELECT"){
+    field.addEventListener('change',()=>{
+      updateProgress();
+      if(field.value) setTimeout(next,180);
+    });
+  }
+});
+
+dateField.addEventListener('change',()=>{
+  if(!dateField.value){
+    availability.className="availability";
+    availability.textContent="Select a date to view availability.";
+    updateProgress();
+    return;
+  }
+  const d=new Date(dateField.value+"T12:00:00");
+  if(d.getDay()===0){
+    availability.className="availability closed";
+    availability.textContent="CLOSED — Sunday classes are not available. Please select Monday–Saturday.";
+    dateField.value="";
+    updateProgress();
+    return;
+  }
+
+  // Mockup-only seat availability: stable count based on selected calendar date.
+  const seats=((d.getDate()*3+d.getMonth())%8)+2;
+  availability.className="availability open";
+  availability.textContent="AVAILABLE — "+seats+" seats remaining";
+  updateProgress();
+  // Stay on the date step so the user can review the selected day
+  // and available seats. Completion occurs only when COMPLETE is pressed.
+});
+
+
+const checkoutBtn=document.getElementById('checkoutBtn');
+const checkout=document.getElementById('checkout');
+const form=document.querySelector('.form');
+const programField=document.getElementById('program');
+const sessionField=document.getElementById('session');
+const coProgram=document.getElementById('coProgram');
+const coSession=document.getElementById('coSession');
+const coDate=document.getElementById('coDate');
+const coTotal=document.getElementById('coTotal');
+const depositNotice=document.getElementById('depositNotice');
+const cardFields=document.getElementById('cardFields');
+const dueToday=document.getElementById('dueToday');
+const dueOnsite=document.getElementById('dueOnsite');
+const payBtn=document.getElementById('payBtn');
+let selectedPayment="";
+
+function tuition(){
+  return programField.value.includes("$2,500") ? 2500 : 1495;
+}
+function money(n){return n.toLocaleString("en-US",{style:"currency",currency:"USD"});}
+
+const waiver=document.getElementById('waiver');
+const waiverName=document.getElementById('waiverName');
+const waiverPhone=document.getElementById('waiverPhone');
+const waiverProgram=document.getElementById('waiverProgram');
+const waiverSchedule=document.getElementById('waiverSchedule');
+checkoutBtn.addEventListener('click',()=>{
+  waiverName.value=document.getElementById('name').value;
+  waiverPhone.value=document.getElementById('phone').value;
+  waiverProgram.value=programField.value;
+  const niceDate=dateField.value ? new Date(dateField.value+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"}) : "—";
+  waiverSchedule.value=niceDate+" · "+sessionField.value;
+  form.style.display="none";
+  waiver.classList.add('active');
+  setTimeout(sizeSignaturePad,80);
+  window.scrollTo({top:waiver.offsetTop-85,behavior:'smooth'});
+});
+function openCheckout(){
+  const total=tuition();
+  coProgram.textContent=programField.value.replace(/ — \$[\d,]+/,"");
+  coSession.textContent=sessionField.value;
+  coDate.textContent=dateField.value ? new Date(dateField.value+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"}) : "—";
+  coTotal.textContent=money(total); dueToday.textContent=money(total*.30); dueOnsite.textContent=money(total*.70);
+  waiver.classList.remove('active'); checkout.classList.add('active'); startSeatTimer();
+  window.scrollTo({top:checkout.offsetTop-85,behavior:'smooth'});
+}
+
+// Required waiver signature pad
+const sigCanvas=document.getElementById('signaturePad'), sigCtx=sigCanvas.getContext('2d'), studentStamp=document.getElementById('studentStamp');
+let signing=false,hasSignature=false,signatureTimestamp='';
+function sizeSignaturePad(){const ratio=Math.max(window.devicePixelRatio||1,1),r=sigCanvas.getBoundingClientRect();if(!r.width)return;sigCanvas.width=Math.round(r.width*ratio);sigCanvas.height=Math.round(r.height*ratio);sigCtx.setTransform(ratio,0,0,ratio,0,0);sigCtx.lineWidth=2.2;sigCtx.lineCap='round';sigCtx.strokeStyle='#101820';}
+function sigPoint(e){const r=sigCanvas.getBoundingClientRect(),t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top]}
+function sigStart(e){e.preventDefault();signing=true;const[x,y]=sigPoint(e);sigCtx.beginPath();sigCtx.moveTo(x,y)}
+function sigMove(e){if(!signing)return;e.preventDefault();const[x,y]=sigPoint(e);sigCtx.lineTo(x,y);sigCtx.stroke();hasSignature=true}
+function sigEnd(){if(!signing)return;signing=false;if(hasSignature){signatureTimestamp=new Date().toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});studentStamp.textContent=signatureTimestamp}}
+['mousedown','touchstart'].forEach(ev=>sigCanvas.addEventListener(ev,sigStart,{passive:false}));['mousemove','touchmove'].forEach(ev=>sigCanvas.addEventListener(ev,sigMove,{passive:false}));['mouseup','mouseleave','touchend','touchcancel'].forEach(ev=>sigCanvas.addEventListener(ev,sigEnd));
+document.getElementById('clearSignature').addEventListener('click',()=>{sizeSignaturePad();hasSignature=false;signatureTimestamp='';studentStamp.textContent='Not signed'});
+document.getElementById('waiverContinue').addEventListener('click',()=>{const req=['waiverName','waiverPhone','waiverAddress','waiverEmergency','waiverEmergencyPhone'];const ok=req.every(id=>document.getElementById(id).value.trim())&&document.getElementById('waiverAgree').checked&&hasSignature;const err=document.getElementById('waiverError');if(!ok){err.style.display='block';return}err.style.display='none';if(!signatureTimestamp){signatureTimestamp=new Date().toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});studentStamp.textContent=signatureTimestamp}openCheckout()});
+
+document.querySelectorAll('input[name="payment"]').forEach(r=>{
+ r.addEventListener('change',()=>{
+   selectedPayment=r.value;
+   document.querySelectorAll('.pay-card').forEach(c=>c.classList.remove('selected'));
+   r.closest('.pay-card').classList.add('selected');
+   cardFields.classList.add('show');
+   if(r.value==="onsite"){
+     depositNotice.classList.add('show');
+     payBtn.textContent="PAY 30% DEPOSIT — "+money(tuition()*.30);
+   }else{
+     depositNotice.classList.remove('show');
+     payBtn.textContent="PAY FULL TUITION — "+money(tuition());
+   }
+ });
+});
+
+
+document.querySelectorAll('.choose').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const chosen=btn.dataset.program;
+    programField.value=chosen;
+    updateProgress();
+    showStep(0);
+  });
+});
+
+
+const sliderTrack=document.getElementById('sliderTrack');
+const slideEls=[...document.querySelectorAll('#heroSlider .slide')];
+const sliderDots=document.getElementById('sliderDots');
+let slideIndex=0, slideTimer;
+
+slideEls.forEach((_,i)=>{
+  const d=document.createElement('button');
+  d.type='button'; d.className='slider-dot'+(i===0?' active':'');
+  d.setAttribute('aria-label','Go to slide '+(i+1));
+  d.addEventListener('click',()=>setSlide(i,true));
+  sliderDots.appendChild(d);
+});
+function setSlide(i,restart=false){
+  slideIndex=(i+slideEls.length)%slideEls.length;
+  sliderTrack.style.transform='translateX(-'+(slideIndex*100)+'%)';
+  [...sliderDots.children].forEach((d,n)=>d.classList.toggle('active',n===slideIndex));
+  if(restart) startSlider();
+}
+function startSlider(){
+  clearInterval(slideTimer);
+  slideTimer=setInterval(()=>setSlide(slideIndex+1),4200);
+}
+document.getElementById('sliderPrev').addEventListener('click',()=>setSlide(slideIndex-1,true));
+document.getElementById('sliderNext').addEventListener('click',()=>setSlide(slideIndex+1,true));
+startSlider();
+
+
+const seatClock=document.getElementById('seatClock');
+const expiredOverlay=document.getElementById('expiredOverlay');
+const restartEnrollment=document.getElementById('restartEnrollment');
+let seatSeconds=600;
+let seatInterval=null;
+
+function renderSeatTimer(){
+  const m=Math.floor(seatSeconds/60);
+  const sec=seatSeconds%60;
+  seatClock.textContent=String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+}
+
+function startSeatTimer(){
+  clearInterval(seatInterval);
+  seatSeconds=600;
+  renderSeatTimer();
+  seatInterval=setInterval(()=>{
+    seatSeconds--;
+    renderSeatTimer();
+    if(seatSeconds<=0){
+      clearInterval(seatInterval);
+      expireSeat();
+    }
+  },1000);
+}
+
+function expireSeat(){
+  expiredOverlay.classList.add('show');
+}
+
+restartEnrollment.addEventListener('click',()=>{
+  expiredOverlay.classList.remove('show');
+  checkout.classList.remove('active');
+  form.style.display='';
+  // Force program/session/date availability to be selected again.
+  programField.value='';
+  sessionField.value='';
+  dateField.value='';
+  availability.className='availability';
+  availability.textContent='Select a date to view availability.';
+  selectedPayment='';
+  document.querySelectorAll('input[name="payment"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('.pay-card').forEach(c=>c.classList.remove('selected'));
+  depositNotice.classList.remove('show');
+  cardFields.classList.remove('show');
+  payBtn.textContent='SELECT PAYMENT METHOD';
+  updateProgress();
+  showStep(5); // restart at program selection so availability flow is repeated
+});
+
+updateProgress();
+
+
+const graduateSearch=document.getElementById('graduateSearch');
+const graduateSearchBtn=document.getElementById('graduateSearchBtn');
+const graduateResult=document.getElementById('graduateResult');
+
+function verifyGraduate(){
+  const q=graduateSearch.value.trim();
+  graduateResult.classList.add('show');
+  if(!q){
+    graduateResult.innerHTML='<div class="not-found">Enter a student name or Certificate of Completion number to search the registry.</div>';
+    return;
+  }
+  // Demonstration result only. Replace with database/API lookup in production.
+  if(q.toLowerCase()==='alex martinez' || q.toUpperCase()==='PTT-2026-00124'){
+    graduateResult.innerHTML=`
+      <div class="student-result">
+       <div class="student-photo">👤</div>
+       <div class="student-info">
+        <h3>Alex Martinez</h3>
+        <span class="verified-badge">✓ COMPLETION VERIFIED</span>
+        <div class="student-meta">
+         <strong>Certificate:</strong> PTT-2026-00124<br>
+         <strong>Completed:</strong> August 8, 2026<br>
+         <strong>Course:</strong> Advanced PLC / Automation
+        </div>
+       </div>
+      </div>`;
+  }else{
+    graduateResult.innerHTML='<div class="not-found"><strong>No public completion record found.</strong><br>Check the spelling or certificate number and try again.</div>';
+  }
+}
+graduateSearchBtn.addEventListener('click',verifyGraduate);
+graduateSearch.addEventListener('keydown',e=>{if(e.key==='Enter')verifyGraduate();});
+
+</script>
+</body>
+</html>
