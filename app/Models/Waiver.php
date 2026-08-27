@@ -14,7 +14,7 @@ class Waiver extends Model
     protected $fillable = [
         'enrollment_id', 'legal_name', 'phone', 'address',
         'emergency_contact', 'emergency_phone',
-        'agreed', 'photo_consent', 'signature_path', 'signed_at',
+        'agreed', 'photo_consent', 'signature_path', 'signed_at', 'needs_review', 'staff_user_id', 'staff_accepted_on', 'staff_signature', 'staff_name',
         'ip_address', 'user_agent',
     ];
 
@@ -24,6 +24,8 @@ class Waiver extends Model
             'agreed'        => 'boolean',
             'photo_consent' => 'boolean',
             'signed_at'     => 'datetime',
+            'staff_accepted_on' => 'date',
+            'needs_review'      => 'boolean',
         ];
     }
 

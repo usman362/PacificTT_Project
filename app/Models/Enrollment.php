@@ -112,4 +112,40 @@ class Enrollment extends Model
 
         return $prefix . str_pad((string) $n, 5, '0', STR_PAD_LEFT);
     }
+
+    /** Total still owed across every enrolment that has paid something but not all. */
+    public static function outstandingTotal(): int
+    {
+        return static::withBalance()->get()->sum(fn (self $e) => $e->balanceCents());
+    }
+
+    /** Enrolments carrying a balance (deposit taken, or nothing yet paid). */
+    public static function withBalance()
+    {
+        return static::whereIn('status', ['deposit_paid', 'waiver_signed', 'started']);
+    }
+
+    public function paidCents(): int
+    {
+        return (int) $this->payments()->where('status', 'succeeded')->sum('amount_cents');
+    }
+
+    public function balanceCents(): int
+    {
+        return max(0, (int) $this->tuition_cents - $this->paidCents());
+    }
+
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            'started'       => 'Started',
+            'waiver_signed' => 'Waiver signed',
+            'deposit_paid'  => 'Deposit',
+            'paid'          => 'Paid',
+            'completed'     => 'Completed',
+            'cancelled'     => 'Cancelled',
+            'abandoned'     => 'Abandoned',
+            default         => ucfirst(str_replace('_', ' ', (string) $this->status)),
+        };
+    }
 }

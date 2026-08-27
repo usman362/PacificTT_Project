@@ -7,12 +7,14 @@ return [
      | are created on demand in class_sessions.
      */
     'session_slots' => [
-        'Weekday Morning — 7:00 AM–11:00 AM',
-        'Weekday Evening — 1:00 PM–5:00 PM',
-        'Saturday Intensive — 6:00 PM–10:00 PM',
+        '8:00 AM – 12:00 PM',
+        '12:00 PM – 4:00 PM',
+        '4:00 PM – 8:00 PM',
     ],
 
     // Seats per dated class unless an admin overrides that class.
+    'seats_per_instructor' => (int) env('PTT_SEATS_PER_INSTRUCTOR', 8),
+
     'default_capacity' => 12,
 
     // How long checkout holds a seat before it is released.

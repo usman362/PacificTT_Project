@@ -132,21 +132,6 @@ input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px #ffad0017}
 }
 .pay-error { margin-top: 8px; color: #ff8b8b; font-size: 12px; font-weight: 700; min-height: 1em; }
 
-/* "Choose this program" buttons on the compare cards. */
-.program-card .choose {
-  width: 100%;
-  margin-top: 16px;
-  min-height: 48px;
-  border: 0;
-  border-radius: 12px;
-  padding: 14px 16px;
-  background: linear-gradient(145deg, #ffd149, #ff8b00);
-  color: #111;
-  font-weight: 950;
-  letter-spacing: .04em;
-  cursor: pointer;
-}
-.program-card .choose:hover { filter: brightness(1.06); }
 
 /* ── Touch targets ─────────────────────────────────────────────────────
    The carousel dots are 7px and the arrows 38px. On touch screens each dot
@@ -180,7 +165,7 @@ input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px #ffad0017}
   .waiver-grid input,
   .verify-search input, .verify-search button { min-height: 48px; }
 
-  .next, .submit, .checkout-action, .waiver-action, .program-card .choose { min-height: 50px; }
+  .next, .submit, .checkout-action, .waiver-action { min-height: 50px; }
 
   /* iOS zooms the page when a focused input is under 16px. */
   input, select, textarea { font-size: 16px; }

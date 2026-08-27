@@ -14,7 +14,7 @@ class Certificate extends Model
 
     protected $fillable = [
         'enrollment_id', 'certificate_number', 'student_name',
-        'course', 'completed_on', 'photo_path', 'is_public',
+        'course', 'completed_on', 'photo_path', 'is_public', 'enrollment_id', 'instructor_id', 'status', 'issued_at',
     ];
 
     protected function casts(): array
@@ -38,5 +38,11 @@ class Certificate extends Model
     public function photoUrl(): ?string
     {
         return $this->photo_path ? Storage::url($this->photo_path) : null;
+    }
+
+
+    public function instructor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Instructor::class);
     }
 }

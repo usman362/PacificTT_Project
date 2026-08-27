@@ -13,7 +13,7 @@ class Payment extends Model
     protected $fillable = [
         'enrollment_id', 'type', 'amount_cents', 'currency',
         'stripe_payment_intent_id', 'card_brand', 'card_last4',
-        'status', 'failure_message', 'paid_at',
+        'status', 'verified_at', 'verified_by', 'reference_note', 'method', 'failure_message', 'paid_at',
     ];
 
     protected function casts(): array

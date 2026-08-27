@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\CertificateAdminController;
+use App\Http\Controllers\Admin\ConsoleActionController;
+use App\Http\Controllers\Admin\ConsoleController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EnrollmentAdminController;
 use App\Http\Controllers\CertificateController;
@@ -57,7 +59,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth')->name('logout');
 
     Route::middleware('auth')->group(function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        // The client's designed console is the admin home.
+        Route::get('/', [ConsoleController::class, 'index'])->name('dashboard');
+
+        Route::post('instructors/save',   [ConsoleActionController::class, 'saveInstructor'])->name('instructors.save');
+        Route::post('instructors/delete', [ConsoleActionController::class, 'deleteInstructor'])->name('instructors.delete');
+        Route::post('leads/save',         [ConsoleActionController::class, 'saveLead'])->name('leads.save');
+        Route::post('waivers/accept',     [ConsoleActionController::class, 'acceptWaiver'])->name('waivers.accept');
+        Route::post('payments/verify',    [ConsoleActionController::class, 'verifyZelle'])->name('payments.verify');
+        Route::get('schedule',            [ConsoleActionController::class, 'schedule'])->name('schedule');
 
         Route::get('enrollments', [EnrollmentAdminController::class, 'index'])->name('enrollments');
         Route::get('enrollments/export', [EnrollmentAdminController::class, 'export'])->name('enrollments.export');
