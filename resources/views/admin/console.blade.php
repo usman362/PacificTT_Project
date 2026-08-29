@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>PACIFIC TRADE TECH&trade; — Admin</title>
-<link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+<link rel="stylesheet" href="{{ \App\Support\Asset::url('css/admin.css') }}">
 </head>
 <body>
 <div class="app">
@@ -454,7 +454,7 @@
   /* Server data the console's own script reads instead of its mock arrays. */
   window.PTT = @json($bootstrap);
 </script>
-<script src="{{ asset('js/admin-design.js') }}"></script>
-<script src="{{ asset('js/admin-crud.js') }}"></script>
+<script src="{{ \App\Support\Asset::url('js/admin-design.js') }}"></script>
+<script src="{{ \App\Support\Asset::url('js/admin-crud.js') }}"></script>
 </body>
 </html>

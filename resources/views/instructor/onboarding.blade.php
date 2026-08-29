@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>PACIFIC TRADE TECH&trade; — Secure Instructor Onboarding</title>
-<link rel="stylesheet" href="{{ asset('css/onboarding.css') }}">
+<link rel="stylesheet" href="{{ \App\Support\Asset::url('css/onboarding.css') }}">
 </head>
 <body>
 <header><div class="wrap"><div class="brand">PACIFIC <span>TRADE TECH™</span></div><div class="secure">SECURE INSTRUCTOR ONBOARDING • SINGLE-USE INVITATION</div></div></header>
@@ -96,7 +96,7 @@
     resend: @js(route('instructor.onboarding.resend', ['token' => $invite->token]))
   };
 </script>
-<script src="{{ asset('js/onboarding.js') }}"></script>
+<script src="{{ \App\Support\Asset::url('js/onboarding.js') }}"></script>
 @endif
 </body>
 </html>
