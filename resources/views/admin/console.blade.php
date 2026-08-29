@@ -101,7 +101,7 @@
 
 <section class="page" id="schedule">
  <div class="logic"><strong>LIVE SEAT RULE:</strong> Public calendar capacity is calculated from instructors actually available for that date/session. <b>1 instructor = 8 seats, 2 = 16 seats, 3 = 24 seats</b>. Closed/unavailable instructors contribute zero seats. Booked seats are then subtracted to show real availability.</div>
- <div class="panel"><div class="toolbar"><label>Date <input type="date" id="schedDate" value="2026-08-12"></label><label>Available instructors <select id="instructorCount"><option value="1">1 instructor</option><option value="2" selected>2 instructors</option><option value="3">3 instructors</option><option value="4">4 instructors</option></select></label><button class="btn gold" onclick="renderSchedule()">Apply Capacity</button></div>
+ <div class="panel"><div class="toolbar"><label>Date <input type="date" id="schedDate" value="{{ today()->toDateString() }}" onchange="renderSchedule()"></label><label>Available instructors <select id="instructorCount"><option value="1">1 instructor</option><option value="2" selected>2 instructors</option><option value="3">3 instructors</option><option value="4">4 instructors</option></select></label><button class="btn gold" onclick="renderSchedule()">Apply Capacity</button></div>
  <div class="sessions" id="sessionGrid"></div></div>
 </section>
 

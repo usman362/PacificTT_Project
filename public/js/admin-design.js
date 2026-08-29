@@ -36,12 +36,36 @@ function renderSchedule(){
     } else if(!d.capacity){
       grid.innerHTML='<div class="instructor"><b>No capacity</b><p class="note">No instructor is available on this date, so the public calendar shows zero seats.</p></div>';
     } else {
-      const byInstructor={};
-      d.sessions.forEach(s=>s.instructors.forEach(i=>{ (byInstructor[i.name] ||= []).push(s); }));
-      grid.innerHTML=Object.entries(byInstructor).map(([name,sessions])=>
-        `<div class="instructor"><div class="insthead"><b>${name}</b><span class="pill paid">AVAILABLE</span></div>`+
-        sessions.map(s=>`<div class="session"><div class="sessiontop"><b>${s.slot}</b><span>${s.booked}/${s.capacity} booked · <b>${s.available} open</b></span></div><div class="bar"><div class="fill" style="width:${s.capacity?Math.min(100,s.booked/s.capacity*100):0}%"></div></div></div>`).join('')+
-        '</div>').join('');
+      const per=d.seats_per_instructor;
+      const slotOf={}; d.sessions.forEach(s=>slotOf[s.slot]=s);
+      // A card per instructor on the roster. The seats an instructor adds are
+      // their own; the booked/open figures belong to the session as a whole,
+      // which is why they are labelled as the session's and not repeated as if
+      // each instructor had a private pool of that size.
+      grid.innerHTML=d.roster.map(i=>{
+        const head=`<div class="instructor"><div class="insthead"><b>${i.name}</b>`+
+          `<span class="pill ${i.available?'paid':'missing'}">${i.available?'AVAILABLE':'UNAVAILABLE'}</span></div>`;
+        if(!i.available) return head+`<p class="note">Not scheduled on this date — adds no seats.</p></div>`;
+        return head+i.slots.map(name=>{
+          const s=slotOf[name];
+          return `<div class="session"><div class="sessiontop"><b>${s.slot}</b>`+
+            `<span>+${per} seats · session ${s.booked}/${s.capacity} · <b>${s.available} open</b></span></div>`+
+            `<div class="bar"><div class="fill" style="width:${s.capacity?Math.min(100,s.booked/s.capacity*100):0}%"></div></div></div>`;
+        }).join('')+'</div>';
+      }).join('');
+    }
+    // Keep the instructor count honest: it states how many are actually
+    // available on the chosen date rather than whatever was last picked. This
+    // runs for closed days too, where the honest answer is zero.
+    const sel=document.getElementById('instructorCount');
+    if(sel){
+      const n=d.available_count;
+      if(!sel.querySelector(`option[value="${n}"]`)){
+        const o=document.createElement('option');
+        o.value=n; o.textContent=`${n} instructor${n===1?'':'s'}`;
+        sel.appendChild(o);
+      }
+      sel.value=String(n);
     }
     const cap=document.getElementById('todayCapacity'), rem=document.getElementById('todayRemaining');
     if(cap) cap.textContent=d.capacity;

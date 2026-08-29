@@ -177,12 +177,31 @@ class ConsoleActionController extends Controller
             ];
         })->values();
 
+        // Every instructor on the roster, not only the ones who happen to cover a
+        // slot — otherwise an instructor who is off that day simply vanishes and
+        // the page gives no hint that they exist.
+        $roster = \App\Models\Instructor::orderBy('name')->get()->map(function ($i) use ($sessions) {
+            $covers = $sessions
+                ->filter(fn ($s) => collect($s['instructors'])->contains(fn ($x) => $x['id'] === $i->id))
+                ->pluck('slot')->values();
+
+            return [
+                'id'        => $i->id,
+                'name'      => $i->name,
+                'slots'     => $covers,
+                'available' => $covers->isNotEmpty(),
+            ];
+        })->values();
+
         return response()->json([
-            'date'      => $date->toDateString(),
-            'closed'    => in_array($date->dayOfWeek, config('ptt.closed_weekdays'), true),
-            'sessions'  => $sessions,
-            'capacity'  => $sessions->sum('capacity'),
-            'booked'    => $sessions->sum('booked'),
+            'date'                 => $date->toDateString(),
+            'closed'               => in_array($date->dayOfWeek, config('ptt.closed_weekdays'), true),
+            'sessions'             => $sessions,
+            'capacity'             => $sessions->sum('capacity'),
+            'booked'               => $sessions->sum('booked'),
+            'roster'               => $roster,
+            'available_count'      => $roster->where('available', true)->count(),
+            'seats_per_instructor' => (int) config('ptt.seats_per_instructor'),
         ]);
     }
 
