@@ -15,6 +15,8 @@ use Illuminate\View\View;
 
 class InstructorOnboardingController extends Controller
 {
+    private const RESEND_SECONDS = 60;
+
     /** The invite link. Single use — once submitted it stops working. */
     public function show(string $token): View
     {
@@ -140,6 +142,42 @@ class InstructorOnboardingController extends Controller
         });
 
         return response()->json(['ok' => true, 'instructor' => $instructor->name]);
+    }
+
+
+    /** A new code, but not on demand every second. */
+    public function resend(string $token): JsonResponse
+    {
+        $invite = $this->usableInvite($token);
+        if (! $invite) {
+            return $this->closed();
+        }
+
+        if ($invite->email_verified) {
+            return response()->json(['ok' => false, 'message' => 'This email is already verified.'], 422);
+        }
+
+        if ($invite->isLockedOut()) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Too many incorrect codes. Ask the office to send a new invitation.',
+            ], 429);
+        }
+
+        // One a minute is plenty, and stops the inbox filling up.
+        $wait = self::RESEND_SECONDS;
+        if ($invite->otp_sent_at && $invite->otp_sent_at->diffInSeconds(now()) < $wait) {
+            $left = $wait - (int) $invite->otp_sent_at->diffInSeconds(now());
+
+            return response()->json([
+                'ok' => false,
+                'message' => "A code was just sent. Try again in {$left} seconds.",
+            ], 429);
+        }
+
+        $this->sendCode($invite);
+
+        return response()->json(['ok' => true, 'message' => 'A new code is on its way.']);
     }
 
     private function usableInvite(string $token): ?InstructorInvitation

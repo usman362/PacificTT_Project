@@ -24,7 +24,7 @@
     <p class="note">Enter the one-time 6-digit code included in your PACIFIC TRADE TECH™ onboarding email.</p>
     <input id="otp" class="otp" maxlength="6" inputmode="numeric" placeholder="000000">
     <button class="btn gold" onclick="pttVerify(this)">VERIFY & CONTINUE</button>
-    <p class="note">For this standalone mockup, use demo code <b>482731</b>.</p>
+    <p class="note">Sent to <b>{{ $invite?->email }}</b>. It expires in 15 minutes.<br>Didn't get it? <a href="#" id="resendCode" style="color:inherit;text-decoration:underline;font-weight:700">Send a new code</a></p>
    </div>
   </section>
 
@@ -92,7 +92,8 @@
 <script>
   window.PTT_ONBOARD = {
     verify: @js(route('instructor.onboarding.verify', ['token' => $invite->token])),
-    submit: @js(route('instructor.onboarding.submit', ['token' => $invite->token]))
+    submit: @js(route('instructor.onboarding.submit', ['token' => $invite->token])),
+    resend: @js(route('instructor.onboarding.resend', ['token' => $invite->token]))
   };
 </script>
 <script src="{{ asset('js/onboarding.js') }}"></script>

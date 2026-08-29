@@ -52,6 +52,8 @@ Route::prefix('instructor/onboarding')->name('instructor.onboarding.')->group(fu
     Route::get('{token}',        [InstructorOnboardingController::class, 'show'])->name('show');
     Route::post('{token}/verify', [InstructorOnboardingController::class, 'verify'])
         ->middleware('throttle:10,1')->name('verify');
+    Route::post('{token}/resend', [InstructorOnboardingController::class, 'resend'])
+        ->middleware('throttle:6,1')->name('resend');
     Route::post('{token}/submit', [InstructorOnboardingController::class, 'submit'])
         ->middleware('throttle:10,1')->name('submit');
 });

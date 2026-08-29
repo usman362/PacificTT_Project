@@ -135,3 +135,58 @@
     } catch (e) { notify(null, e.message); }
   };
 })();
+
+/* ── resend the code ──────────────────────────────────────────────── */
+(function () {
+  'use strict';
+
+  const link = document.getElementById('resendCode');
+  if (!link) return;
+
+  let cooling = false;
+
+  link.addEventListener('click', async function (e) {
+    e.preventDefault();
+    if (cooling) return;
+
+    const original = link.textContent;
+    cooling = true;
+    link.textContent = 'Sending…';
+
+    try {
+      const res = await fetch(window.PTT_ONBOARD.resend, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+        }
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (data.closed) {
+        document.getElementById('normal').style.display = 'none';
+        document.getElementById('closed').style.display = 'block';
+        return;
+      }
+
+      link.textContent = res.ok ? 'New code sent' : (data.message || 'Could not send it');
+
+      // Match the server's own one-a-minute rule so the link can't be hammered.
+      let left = 60;
+      const tick = setInterval(() => {
+        left -= 1;
+        if (left <= 0) {
+          clearInterval(tick);
+          link.textContent = original;
+          cooling = false;
+        } else if (res.ok) {
+          link.textContent = `New code sent — you can ask again in ${left}s`;
+        }
+      }, 1000);
+    } catch (err) {
+      link.textContent = original;
+      cooling = false;
+    }
+  });
+})();
