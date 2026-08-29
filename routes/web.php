@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\EnrollmentAdminController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\InstructorOnboardingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\WaiverController;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,14 @@ Route::prefix('api')->name('api.')->group(function () {
 /*
 | Stripe → us. Outside the CSRF group; verified by signature instead.
 */
+Route::prefix('instructor/onboarding')->name('instructor.onboarding.')->group(function () {
+    Route::get('{token}',        [InstructorOnboardingController::class, 'show'])->name('show');
+    Route::post('{token}/verify', [InstructorOnboardingController::class, 'verify'])
+        ->middleware('throttle:10,1')->name('verify');
+    Route::post('{token}/submit', [InstructorOnboardingController::class, 'submit'])
+        ->middleware('throttle:10,1')->name('submit');
+});
+
 Route::post('stripe/webhook', [CheckoutController::class, 'webhook'])->name('stripe.webhook');
 
 /*
@@ -64,6 +73,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [ConsoleController::class, 'index'])->name('dashboard');
 
         Route::post('instructors/save',   [ConsoleActionController::class, 'saveInstructor'])->name('instructors.save');
+        Route::post('instructors/invite', [ConsoleActionController::class, 'inviteInstructor'])->name('instructors.invite');
         Route::post('instructors/delete', [ConsoleActionController::class, 'deleteInstructor'])->name('instructors.delete');
         Route::post('leads/save',         [ConsoleActionController::class, 'saveLead'])->name('leads.save');
         Route::post('waivers/accept',     [ConsoleActionController::class, 'acceptWaiver'])->name('waivers.accept');

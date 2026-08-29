@@ -330,7 +330,7 @@
 <section class="page" id="instructors">
  <div class="inst-toolbar">
   <div><h2 style="margin:0">Instructor Management</h2><div class="note">Add, edit or remove instructors. Availability directly controls public calendar seat capacity.</div></div>
-  <button class="btn gold" onclick="newInstructor()">+ Add Instructor</button>
+  <div class="inst-actions"><button class="btn light" type="button" onclick="inviteInstructor()">Send onboarding invite</button><button class="btn gold" type="button" onclick="newInstructor()">+ Add Instructor</button></div>
  </div>
  <div class="logic"><strong>CAPACITY RULE:</strong> Each available instructor adds <b>8 seats per session</b>. If only one instructor is available for a session, the public calendar shows 8 total seats. Two available instructors show 16, three show 24, and so on. Unavailable instructors add zero capacity.</div>
  <div class="panel">

@@ -186,6 +186,32 @@ class ConsoleActionController extends Controller
         ]);
     }
 
+
+    /** Issue a single-use onboarding link and email the instructor. */
+    public function inviteInstructor(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'max:180'],
+            'name'  => ['nullable', 'string', 'max:120'],
+        ]);
+
+        $existing = \App\Models\InstructorInvitation::where('email', $data['email'])
+            ->whereNull('consumed_at')
+            ->where('expires_at', '>', now())
+            ->first();
+
+        $invite = $existing ?: \App\Models\InstructorInvitation::issue(
+            $data['email'], $data['name'] ?? null, $request->user()->id
+        );
+
+        return response()->json([
+            'ok'      => true,
+            'link'    => route('instructor.onboarding.show', ['token' => $invite->token]),
+            'reused'  => (bool) $existing,
+            'expires' => $invite->expires_at->format('M j, Y'),
+        ]);
+    }
+
     private function parseFollowUp(?string $value): ?Carbon
     {
         if (! $value || $value === 'Not scheduled') {

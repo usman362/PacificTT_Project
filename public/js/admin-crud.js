@@ -80,6 +80,7 @@
     lastFocus?.focus();
   }
   window.pttCloseModal = closeModal;
+  window.pttOpenModal = openModal;
 
   function modalError(message) {
     const el = backdrop?.querySelector('.modal-error');
@@ -347,4 +348,66 @@
     document.getElementById('enrollSearch')?.addEventListener('input', filterEnrollments);
     document.getElementById('enrollStatus')?.addEventListener('change', filterEnrollments);
   });
+})();
+
+/* ── instructor onboarding invites ─────────────────────────────────── */
+(function () {
+  'use strict';
+
+  window.inviteInstructor = async function () {
+    const R = window.PTT.routes;
+    const body = `<form id="inviteForm"><div class="fieldgrid">
+        <div class="field"><label for="i_name">Name</label>
+          <input id="i_name" name="name" placeholder="Optional"><div class="err"></div></div>
+        <div class="field"><label for="i_email">Email *</label>
+          <input id="i_email" name="email" type="email" placeholder="instructor@example.com"><div class="err"></div></div>
+      </div></form>
+      <p class="note" style="margin-top:12px">
+        They get a single-use link and a 6-digit code by email. The link stops
+        working once they submit, and expires after 14 days.</p>
+      <div id="inviteResult" style="display:none;margin-top:14px">
+        <div class="verifybox"><b>Invitation ready</b><br>
+          <span id="inviteExpiry"></span>
+          <div style="margin-top:8px"><input id="inviteLink" readonly style="width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:12px"></div>
+          <button class="btn light" type="button" style="margin-top:8px" onclick="
+            document.getElementById('inviteLink').select();
+            document.execCommand('copy');
+            window.pttToast('Link copied.','good');">Copy link</button>
+        </div>
+      </div>`;
+
+    window.pttOpenModal({
+      title: 'Send onboarding invite',
+      body,
+      actions: `<button class="btn light" type="button" onclick="pttCloseModal()">Close</button>
+                <button class="btn gold" type="button" id="doInvite">Send invite</button>`
+    });
+
+    document.getElementById('doInvite').onclick = async (ev) => {
+      const btn = ev.currentTarget; btn.disabled = true;
+      const payload = {
+        email: document.getElementById('i_email').value.trim(),
+        name:  document.getElementById('i_name').value.trim()
+      };
+      try {
+        const res = await fetch(R.inviteInstructor, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json', 'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || Object.values(data.errors || {}).flat()[0] || 'Could not send it.');
+        document.getElementById('inviteResult').style.display = 'block';
+        document.getElementById('inviteLink').value = data.link;
+        document.getElementById('inviteExpiry').textContent =
+          (data.reused ? 'An unused invitation already existed, so that one is being reused. ' : '') +
+          'Expires ' + data.expires + '.';
+        btn.disabled = false;
+        window.pttToast(data.reused ? 'Existing invitation reused.' : 'Invitation sent.', 'good');
+      } catch (e) { btn.disabled = false; window.pttToast(e.message, 'bad'); }
+    };
+  };
 })();

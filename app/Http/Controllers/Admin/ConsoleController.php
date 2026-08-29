@@ -295,6 +295,7 @@ class ConsoleController extends Controller
                 'certReissue'      => route('admin.cert.reissue',   ['certificate' => '__ID__']),
                 'settingsSave'     => route('admin.settings.save'),
                 'export'           => route('admin.export'),
+                'inviteInstructor' => route('admin.instructors.invite'),
             ],
         ];
     }
