@@ -392,11 +392,8 @@
 
 <div id="stripeFields">
   <div class="settingrow"><div><b>Stripe Publishable Key</b></div><input type="password" value="" disabled placeholder="{{ config('services.stripe.key') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
-<input type="password" value="" disabled placeholder="{{ config('services.stripe.key') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
   <div class="settingrow"><div><b>Stripe Secret Key</b><div class="note">Server-side credential</div></div><input type="password" value="" disabled placeholder="{{ config('services.stripe.secret') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
-</div><input type="password" value="" disabled placeholder="{{ config('services.stripe.secret') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
   <div class="settingrow"><div><b>Webhook Secret</b></div><input type="password" value="" disabled placeholder="{{ config('services.stripe.webhook_secret') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
-<input type="password" value="" disabled placeholder="{{ config('services.stripe.webhook_secret') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
 </div>
 
 <div id="paypalFields" style="display:none">
