@@ -53,5 +53,25 @@ class DatabaseSeeder extends Seeder
                 'is_public'    => true,
             ]
         );
+    
+        // Without at least one instructor the calendar has zero capacity,
+        // so a fresh install seeds the two the school starts with.
+        foreach ([
+            ['Instructor A', 'instructora@pacifictt.com', '(909) 555-0101'],
+            ['Instructor B', 'instructorb@pacifictt.com', '(909) 555-0102'],
+        ] as [$name, $email, $phone]) {
+            $instructor = \App\Models\Instructor::firstOrCreate(
+                ['email' => $email],
+                ['name' => $name, 'phone' => $phone, 'daily_rate_cents' => 120000,
+                 'status' => 'active', 'courses' => 'both']
+            );
+
+            foreach (range(1, 6) as $weekday) {          // Monday–Saturday
+                \App\Models\InstructorAvailability::updateOrCreate(
+                    ['instructor_id' => $instructor->id, 'weekday' => $weekday],
+                    ['is_available' => true, 'starts_at' => '08:00', 'ends_at' => '20:00']
+                );
+            }
+        }
     }
 }
