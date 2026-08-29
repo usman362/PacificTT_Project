@@ -21,7 +21,8 @@ class Payment extends Model
         return [
             'amount_cents' => 'integer',
             'paid_at'      => 'datetime',
-        ];
+        
+            'verified_at' => 'datetime',];
     }
 
     public function enrollment(): BelongsTo

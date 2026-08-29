@@ -21,6 +21,7 @@ class Certificate extends Model
     {
         return [
             'completed_on' => 'date',
+            'issued_at'    => 'datetime',
             'is_public'    => 'boolean',
         ];
     }
@@ -44,5 +45,19 @@ class Certificate extends Model
     public function instructor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Instructor::class);
+    }
+
+    /** PTT-YYYY-NNNNN, unique and never reused. */
+    public static function nextNumber(): string
+    {
+        $year = now()->year;
+
+        $last = static::where('certificate_number', 'like', "PTT-{$year}-%")
+            ->orderByDesc('certificate_number')
+            ->value('certificate_number');
+
+        $next = $last ? ((int) substr($last, -5)) + 1 : 1;
+
+        return sprintf('PTT-%d-%05d', $year, $next);
     }
 }

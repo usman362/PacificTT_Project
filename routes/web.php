@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\CertificateAdminController;
 use App\Http\Controllers\Admin\ConsoleActionController;
 use App\Http\Controllers\Admin\ConsoleController;
+use App\Http\Controllers\Admin\ConsoleCrudController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EnrollmentAdminController;
 use App\Http\Controllers\CertificateController;
@@ -68,6 +69,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('waivers/accept',     [ConsoleActionController::class, 'acceptWaiver'])->name('waivers.accept');
         Route::post('payments/verify',    [ConsoleActionController::class, 'verifyZelle'])->name('payments.verify');
         Route::get('schedule',            [ConsoleActionController::class, 'schedule'])->name('schedule');
+
+        // CRUD behind the console's modals
+        Route::get('lookups',                       [ConsoleCrudController::class, 'lookups'])->name('lookups');
+        Route::get('enroll/{enrollment}',           [ConsoleCrudController::class, 'showEnrollment'])->name('enroll.show');
+        Route::post('enroll',                       [ConsoleCrudController::class, 'storeEnrollment'])->name('enroll.store');
+        Route::put('enroll/{enrollment}',           [ConsoleCrudController::class, 'updateEnrollment'])->name('enroll.update');
+        Route::delete('enroll/{enrollment}',        [ConsoleCrudController::class, 'destroyEnrollment'])->name('enroll.destroy');
+        Route::post('certificates/issue',           [ConsoleCrudController::class, 'issueCertificate'])->name('cert.issue');
+        Route::post('certificates/{certificate}/revoke',  [ConsoleCrudController::class, 'revokeCertificate'])->name('cert.revoke');
+        Route::post('certificates/{certificate}/reissue', [ConsoleCrudController::class, 'reissueCertificate'])->name('cert.reissue');
+        Route::post('settings/save',                [ConsoleCrudController::class, 'saveSetting'])->name('settings.save');
+        Route::get('export',                        [ConsoleCrudController::class, 'export'])->name('export');
 
         Route::get('enrollments', [EnrollmentAdminController::class, 'index'])->name('enrollments');
         Route::get('enrollments/export', [EnrollmentAdminController::class, 'export'])->name('enrollments.export');

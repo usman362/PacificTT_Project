@@ -285,6 +285,16 @@ class ConsoleController extends Controller
                 'acceptWaiver'     => route('admin.waivers.accept'),
                 'verifyZelle'      => route('admin.payments.verify'),
                 'schedule'         => route('admin.schedule'),
+                'lookups'          => route('admin.lookups'),
+                'enrollShow'       => route('admin.enroll.show',    ['enrollment' => '__ID__']),
+                'enrollStore'      => route('admin.enroll.store'),
+                'enrollUpdate'     => route('admin.enroll.update',  ['enrollment' => '__ID__']),
+                'enrollDestroy'    => route('admin.enroll.destroy', ['enrollment' => '__ID__']),
+                'certIssue'        => route('admin.cert.issue'),
+                'certRevoke'       => route('admin.cert.revoke',    ['certificate' => '__ID__']),
+                'certReissue'      => route('admin.cert.reissue',   ['certificate' => '__ID__']),
+                'settingsSave'     => route('admin.settings.save'),
+                'export'           => route('admin.export'),
             ],
         ];
     }

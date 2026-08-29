@@ -32,7 +32,7 @@
 <main>
 <div class="top">
  <div><h1 id="pageTitle">Dashboard</h1><p>Operations, enrollment, payments and training management.</p></div>
- <div class="actions"><button class="btn light">Export</button><button class="btn gold">+ New Enrollment</button></div>
+ <div class="actions"><button class="btn light" type="button" onclick="exportEnrollments()">Export</button><button class="btn gold" type="button" onclick="newEnrollment()">+ New Enrollment</button></div>
 </div>
 
 <section class="page active" id="dashboard">
@@ -69,17 +69,34 @@
  </div>
 </section>
 
-<section class="page" id="enrollments"><div class="panel"><h2>Enrollment Management</h2><div class="toolbar"><input placeholder="Search student or enrollment #"><select><option>All statuses</option><option>Paid</option><option>Scheduled</option><option>Completed</option><option>No-show</option></select><button class="btn">Search</button></div><table><thead><tr><th>ID</th><th>Student</th><th>Program</th><th>Date / Session</th><th>Paid</th><th>Waiver</th><th>Status</th></tr></thead><tbody>
+<section class="page" id="enrollments"><div class="panel"><h2>Enrollment Management</h2><div class="toolbar">
+   <input id="enrollSearch" placeholder="Search name, email, phone or reference">
+   <select id="enrollStatus">
+     <option value="">All statuses</option>
+     <option value="started">Started</option>
+     <option value="waiver_signed">Waiver signed</option>
+     <option value="deposit_paid">Deposit</option>
+     <option value="paid">Paid</option>
+     <option value="completed">Completed</option>
+     <option value="cancelled">Cancelled</option>
+     <option value="abandoned">Abandoned</option>
+   </select>
+   <button class="btn" type="button" onclick="filterEnrollments()">Search</button>
+   <button class="btn light" type="button" onclick="exportEnrollments()">Export CSV</button>
+   <button class="btn gold" type="button" onclick="newEnrollment()">+ New Enrollment</button>
+  </div><table><thead><tr><th>ID</th><th>Student</th><th>Program</th><th>Date / Session</th><th>Paid</th><th>Waiver</th><th>Status</th><th></th></tr></thead><tbody id="enrollRows">
 @forelse($enrollments as $e)
 @php $w = $e->waiver; $bal = $e->balanceCents(); @endphp
-<tr><td>{{ $e->reference }}</td><td>{{ $e->name }}</td><td>{{ $e->program?->short_name ?? $e->program?->name }}</td>
+<tr data-enrollment="{{ $e->id }}" data-status="{{ $e->status }}"><td>{{ $e->reference }}</td><td>{{ $e->name }}</td><td>{{ $e->program?->short_name ?? $e->program?->name }}</td>
  <td>{{ $e->preferred_date?->format('M j') }} · {{ $e->classSession?->label }}</td>
  <td>@if($bal === 0)<span class="pill paid">PAID</span>@else<span class="pill due">${{ number_format($bal / 100, 2) }} DUE</span>@endif</td>
  <td>@if(!$w)<span class="pill missing">MISSING</span>@elseif($w->needs_review)<span class="pill missing">REVIEW</span>@else<span class="pill paid">SIGNED</span>@endif</td>
- <td>{{ $e->statusLabel() }}</td></tr>
+ <td>{{ $e->statusLabel() }}</td>
+ <td><div class="rowactions"><button class="btn light" type="button" onclick="editEnrollment({{ $e->id }})">Open</button></div></td></tr>
 @empty
-<tr><td colspan="7" class="note">No enrollments yet.</td></tr>
+<tr><td colspan="8" class="note">No enrollments yet.</td></tr>
 @endforelse
+<tr id="enrollEmpty" style="display:none"><td colspan="8" class="note">Nothing matches that search.</td></tr>
 </tbody></table></div></section>
 
 <section class="page" id="schedule">
@@ -249,7 +266,7 @@
  <div class="panel">
   <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px">
    <div><h2 style="margin:0">Certificate Management</h2><div class="note">Issue, verify, reprint and manage Certificates of Completion.</div></div>
-   <button class="btn gold" onclick="alert('Mockup: select a completed enrollment to issue a certificate.')">+ Issue Certificate</button>
+   <button class="btn gold" type="button" onclick="issueCertificate()">+ Issue Certificate</button>
   </div>
   <div class="toolbar">
    <input id="certSearch" placeholder="Search name or certificate #">
@@ -300,8 +317,9 @@
    <div class="cert-row"><span>Public Registry</span><b style="color:var(--good)">PUBLISHED</b></div>
    <div class="verifybox"><b>✓ COMPLETION VERIFIED</b><br>This certificate is active in the PACIFIC TRADE TECH™ completion registry.</div>
    <div class="cert-actions">
-    <button class="btn">View PDF</button><button class="btn">Print</button><button class="btn">Email</button><button class="btn">Reissue</button>
-    <button class="btn" style="background:var(--bad)" onclick="alert('Mockup: revocation would require confirmation and an audit-log reason.')">Revoke</button>
+    <button class="btn" type="button" onclick="window.print()">Print</button>
+    <button class="btn" type="button" id="certReissueBtn">Reissue</button>
+    <button class="btn danger" type="button" id="certRevokeBtn">Revoke</button>
    </div>
    <p class="note"><b>Backend rule:</b> certificate numbers are generated only after an enrollment is marked Completed. Numbers are unique and never reused. Reissues retain the original certificate number and create an audit record.</p>
   </div>
@@ -348,14 +366,14 @@
 <section class="page" id="reports"><div class="cards"><div class="card"><div class="k">Gross Tuition MTD</div><div class="v">${{ number_format($reports['gross_mtd'], 0) }}</div></div><div class="card"><div class="k">Avg Enrollment</div><div class="v">${{ number_format($reports['avg_enrollment'], 0) }}</div></div><div class="card"><div class="k">Occupancy</div><div class="v">{{ $reports['occupancy'] }}%</div></div><div class="card"><div class="k">No-Show</div><div class="v">{{ $reports['no_show'] }}</div></div></div><div class="panel" style="margin-top:14px"><h2>Financial Reporting</h2><p class="note">Today / Week / Month / Quarter / Year / Custom. Track tuition, refunds, processing, instructor payroll, advertising, materials, operating expense, IP royalty and operating profit.</p></div></section>
 <section class="page" id="settings"><div class="panel"><h2>Operating Settings</h2>
 @foreach($programs as $p)
-<div class="settingrow"><div><b>{{ $p->name }}</b><div class="note">{{ $p->short_name }}</div></div><input value="${{ number_format($p->price_cents / 100, 0) }}" data-program="{{ $p->id }}"><button class="btn light">Save</button></div>
+<div class="settingrow"><div><b>{{ $p->name }}</b><div class="note">{{ $p->short_name }}</div></div><input id="price_{{ $p->id }}" value="${{ number_format($p->price_cents / 100, 0) }}"><button class="btn light" type="button" onclick="saveSetting(this, 'program_price_{{ $p->id }}', 'price_{{ $p->id }}')">Save</button></div>
 @endforeach
 
-<div class="settingrow"><div><b>Seats per instructor / session</b><div class="note">Used by public calendar capacity engine</div></div><input id="seatSetting" type="number" min="1" value="{{ $settings['seats_per_instructor'] }}"><button class="btn light" onclick="renderSchedule()">Apply</button></div>
-<div class="settingrow"><div><b>Sessions per day</b></div><input value="{{ count($settings['session_slots']) }}"><button class="btn light">Save</button></div>
-<div class="settingrow"><div><b>Deposit</b></div><input value="{{ $settings['deposit_percent'] }}%"><button class="btn light">Save</button></div>
-<div class="settingrow"><div><b>Operating days</b></div><input value="Monday–Saturday; Sunday Closed"><button class="btn light">Save</button></div>
-<div class="settingrow"><div><b>Contact</b></div><input value="1 (800) XXX-XXXX"><button class="btn light">Save</button></div>
+<div class="settingrow"><div><b>Seats per instructor / session</b><div class="note">Used by public calendar capacity engine</div></div><input id="seatSetting" type="number" min="1" value="{{ $settings['seats_per_instructor'] }}"><button class="btn light" type="button" onclick="saveSetting(this, 'seats_per_instructor', 'seatSetting'); renderSchedule()">Apply</button></div>
+<div class="settingrow"><div><b>Sessions per day</b></div><input id="setSessions" value="{{ \App\Models\Setting::get('sessions_per_day', count($settings['session_slots'])) }}"><button class="btn light" type="button" onclick="saveSetting(this, 'sessions_per_day', 'setSessions')">Save</button></div>
+<div class="settingrow"><div><b>Deposit</b></div><input id="depositPct" value="{{ $settings['deposit_percent'] }}"><button class="btn light" type="button" onclick="saveSetting(this, 'deposit_percent', 'depositPct')">Save</button></div>
+<div class="settingrow"><div><b>Operating days</b></div><input id="setDays" value="{{ \App\Models\Setting::get('operating_days', 'Monday–Saturday; Sunday Closed') }}"><button class="btn light" type="button" onclick="saveSetting(this, 'operating_days', 'setDays')">Save</button></div>
+<div class="settingrow"><div><b>Contact</b></div><input id="contactPhone" value="{{ \App\Models\Setting::get('contact_phone', '1 (800) 997-4607') }}"><button class="btn light" type="button" onclick="saveSetting(this, 'contact_phone', 'contactPhone')">Save</button></div>
 <div style="margin-top:24px;padding-top:18px;border-top:2px solid var(--line)">
   <h2 style="margin:0 0 5px">Payment Merchant</h2>
   <div class="note">Configure the payment processor used by student checkout. Credentials shown here are mockup fields only.</div>
@@ -369,18 +387,21 @@
     <option value="zelle">Zelle — In-House Verification</option>
     <option value="other">Other</option>
   </select>
-  <button class="btn light">Save</button>
+  <button class="btn light" type="button" onclick="saveSetting(this, 'payment_merchant', 'merchantSelect')">Save</button>
 </div>
 
 <div id="stripeFields">
-  <div class="settingrow"><div><b>Stripe Publishable Key</b></div><input type="password" value="" placeholder="{{ config('services.stripe.key') ? 'configured' : 'not set' }}"><button class="btn light">Update</button></div>
-  <div class="settingrow"><div><b>Stripe Secret Key</b><div class="note">Server-side credential</div></div><input type="password" value="" placeholder="{{ config('services.stripe.secret') ? 'configured' : 'not set' }}"><button class="btn light">Update</button></div>
-  <div class="settingrow"><div><b>Webhook Secret</b></div><input type="password" value="" placeholder="{{ config('services.stripe.webhook_secret') ? 'configured' : 'not set' }}"><button class="btn light">Update</button></div>
+  <div class="settingrow"><div><b>Stripe Publishable Key</b></div><input type="password" value="" disabled placeholder="{{ config('services.stripe.key') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
+<input type="password" value="" disabled placeholder="{{ config('services.stripe.key') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
+  <div class="settingrow"><div><b>Stripe Secret Key</b><div class="note">Server-side credential</div></div><input type="password" value="" disabled placeholder="{{ config('services.stripe.secret') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
+</div><input type="password" value="" disabled placeholder="{{ config('services.stripe.secret') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
+  <div class="settingrow"><div><b>Webhook Secret</b></div><input type="password" value="" disabled placeholder="{{ config('services.stripe.webhook_secret') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
+<input type="password" value="" disabled placeholder="{{ config('services.stripe.webhook_secret') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
 </div>
 
 <div id="paypalFields" style="display:none">
-  <div class="settingrow"><div><b>PayPal Client ID</b></div><input type="password" placeholder="Enter Client ID"><button class="btn light">Update</button></div>
-  <div class="settingrow"><div><b>PayPal Client Secret</b><div class="note">Server-side credential</div></div><input type="password" placeholder="Enter Client Secret"><button class="btn light">Update</button></div>
+  <div class="settingrow"><div><b>PayPal Client ID</b></div><input type="password" placeholder="Set in the server environment" disabled><span class="note">Server environment</span></div>
+  <div class="settingrow"><div><b>PayPal Client Secret</b><div class="note">Server-side credential</div></div><input type="password" placeholder="Set in the server environment" disabled><span class="note">Server environment</span></div>
 </div>
 
 
@@ -388,41 +409,41 @@
   <div class="settingrow">
     <div><b>Zelle Payment</b><div class="note">Primarily for walk-in payments. Payments remain pending until verified by authorized staff.</div></div>
     <select id="zelleEnabled"><option>Enabled</option><option>Disabled</option></select>
-    <button class="btn light">Save</button>
+    <button class="btn light" type="button" onclick="saveSetting(this, 'zelle_enabled', 'zelleEnabled')">Save</button>
   </div>
   <div class="settingrow">
     <div><b>Zelle Recipient</b><div class="note">Business email or phone displayed to staff/customer</div></div>
-    <input placeholder="Enter Zelle business email or phone">
-    <button class="btn light">Save</button>
+    <input id="zelleRecipient" placeholder="Enter Zelle business email or phone">
+    <button class="btn light" type="button" onclick="saveSetting(this, 'zelle_recipient', 'zelleRecipient')">Save</button>
   </div>
   <div class="settingrow">
     <div><b>Verification Requirement</b><div class="note">Enrollment is not marked paid until staff confirms receipt.</div></div>
-    <select><option>Required — In-House Verification</option></select>
-    <button class="btn light">Save</button>
+    <select id="zelleVerify"><option>Required — In-House Verification</option></select>
+    <button class="btn light" type="button" onclick="saveSetting(this, 'zelle_verification', 'zelleVerify')">Save</button>
   </div>
   <div class="settingrow">
     <div><b>Default Use</b></div>
-    <select><option>Walk-In / In-House</option><option>Allow Online Selection</option></select>
-    <button class="btn light">Save</button>
+    <select id="zelleUse"><option>Walk-In / In-House</option><option>Allow Online Selection</option></select>
+    <button class="btn light" type="button" onclick="saveSetting(this, 'zelle_default_use', 'zelleUse')">Save</button>
   </div>
 </div>
 
 <div id="otherFields" style="display:none">
-  <div class="settingrow"><div><b>Merchant Name</b></div><input placeholder="Merchant / gateway name"><button class="btn light">Save</button></div>
-  <div class="settingrow"><div><b>API / Merchant ID</b></div><input type="password" placeholder="Enter merchant ID or API key"><button class="btn light">Update</button></div>
-  <div class="settingrow"><div><b>Secret / Token</b></div><input type="password" placeholder="Enter secret or token"><button class="btn light">Update</button></div>
+  <div class="settingrow"><div><b>Merchant Name</b></div><input id="otherMerchant" placeholder="Merchant / gateway name" value="{{ \App\Models\Setting::get('other_merchant_name', '') }}"><button class="btn light" type="button" onclick="saveSetting(this, 'other_merchant_name', 'otherMerchant')">Save</button></div>
+  <div class="settingrow"><div><b>API / Merchant ID</b></div><input type="password" placeholder="Set in the server environment" disabled><span class="note">Server environment</span></div>
+  <div class="settingrow"><div><b>Secret / Token</b></div><input type="password" placeholder="Set in the server environment" disabled><span class="note">Server environment</span></div>
 </div>
 
 <div class="settingrow">
   <div><b>Merchant Status</b><div class="note">Controls whether online payment is available at checkout</div></div>
-  <select><option>Live / Enabled</option><option>Test Mode</option><option>Disabled</option></select>
-  <button class="btn light">Save</button>
+  <select id="merchantStatus"><option>Live / Enabled</option><option>Test Mode</option><option>Disabled</option></select>
+  <button class="btn light" type="button" onclick="saveSetting(this, 'merchant_status', 'merchantStatus')">Save</button>
 </div>
 
 <div class="settingrow">
   <div><b>Accepted Checkout Options</b><div class="note">Full payment or 30% deposit / balance onsite</div></div>
-  <select><option>Full Payment + 30% Deposit</option><option>Full Payment Only</option><option>30% Deposit Only</option></select>
-  <button class="btn light">Save</button>
+  <select id="checkoutOptions"><option>Full Payment + 30% Deposit</option><option>Full Payment Only</option><option>30% Deposit Only</option></select>
+  <button class="btn light" type="button" onclick="saveSetting(this, 'checkout_options', 'checkoutOptions')">Save</button>
 </div>
 
 </div></section>
@@ -434,5 +455,6 @@
   window.PTT = @json($bootstrap);
 </script>
 <script src="{{ asset('js/admin-design.js') }}"></script>
+<script src="{{ asset('js/admin-crud.js') }}"></script>
 </body>
 </html>

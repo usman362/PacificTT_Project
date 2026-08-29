@@ -32,36 +32,45 @@ class SeatAvailability
     /**
      * @return array{open:bool, reason:?string, seats_remaining:int, capacity:int}
      */
-    public function check(Program $program, string $slot, Carbon $date): array
+    public function check(Program $program, string $slot, Carbon $date, ?Enrollment $ignore = null): array
     {
-        $capacity = config('ptt.default_capacity');
-
         if (! $this->isOpenOn($date)) {
-            return $this->closed('Sunday classes are not available. Please select Monday–Saturday.', $capacity);
+            return $this->closed('Sunday classes are not available. Please select Monday–Saturday.', 0);
         }
 
         if ($this->isPast($date)) {
-            return $this->closed('That date has already passed. Please choose an upcoming date.', $capacity);
+            return $this->closed('That date has already passed. Please choose an upcoming date.', 0);
+        }
+
+        // Capacity comes from who is actually rostered for that session.
+        $capacity = $this->capacityForSlot($date, $slot);
+
+        if ($capacity === 0) {
+            return $this->closed('No instructor is available for that session. Please choose another date or time.', 0);
         }
 
         $session = $this->findSession($program, $slot, $date);
 
-        if ($session === null) {
-            // Nobody has booked this day yet.
-            return ['open' => true, 'reason' => null, 'seats_remaining' => $capacity, 'capacity' => $capacity];
+        if ($session && ! $session->is_active) {
+            return $this->closed('That class has been closed. Please choose another date.', $capacity);
         }
 
-        if (! $session->is_active) {
-            return $this->closed('That class has been closed. Please choose another date.', $session->capacity);
+        $booked = $this->bookedForSlot($date, $slot);
+
+        // When an existing booking is being moved, it must not block itself.
+        if ($ignore
+            && $ignore->preferred_date?->toDateString() === $date->toDateString()
+            && $ignore->classSession?->label === $slot) {
+            $booked = max(0, $booked - 1);
         }
 
-        $remaining = $session->seatsRemaining();
+        $remaining = max(0, $capacity - $booked);
 
         return [
             'open'            => $remaining > 0,
             'reason'          => $remaining > 0 ? null : 'This class is full. Please choose another date or session.',
             'seats_remaining' => $remaining,
-            'capacity'        => $session->capacity,
+            'capacity'        => $capacity,
         ];
     }
 
