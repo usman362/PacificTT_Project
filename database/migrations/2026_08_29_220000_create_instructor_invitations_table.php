@@ -22,7 +22,7 @@ return new class extends Migration
                 $t->timestamp('otp_sent_at')->nullable();
                 $t->boolean('email_verified')->default(false);
 
-                $t->timestamp('expires_at');
+                $t->dateTime('expires_at');
                 $t->timestamp('consumed_at')->nullable();
                 $t->foreignId('instructor_id')->nullable()->constrained()->nullOnDelete();
                 $t->foreignId('invited_by')->nullable()->constrained('users')->nullOnDelete();
@@ -41,7 +41,7 @@ return new class extends Migration
                 $t->string('address');
                 $t->string('city');
                 $t->string('signature');              // typed legal name
-                $t->timestamp('signed_at');
+                $t->dateTime('signed_at');
                 $t->string('agreement_version')->default('PTT-ICA-2026.1');
                 $t->string('ip_address', 45)->nullable();
                 $t->text('user_agent')->nullable();

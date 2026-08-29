@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Signature is written to storage; we keep the path, not the blob.
             $table->string('signature_path');
-            $table->timestamp('signed_at');
+            $table->dateTime('signed_at');
 
             // Kept for evidentiary value if a waiver is ever disputed.
             $table->ipAddress('ip_address')->nullable();
