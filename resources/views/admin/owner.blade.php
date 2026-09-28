@@ -31,6 +31,11 @@
       <nav>
         <button data-href="{{ route('admin.dashboard') }}">Assistant Command</button>
       </nav>
+      <div class="nav-label">ACCOUNT</div>
+      <nav>
+        <button data-logout>Sign out</button>
+      </nav>
+      <form id="logoutForm" method="POST" action="{{ route('admin.logout') }}" hidden>@csrf</form>
       <div class="owner"><div class="avatar">{{ $initials }}</div><div><strong>{{ $user->name }}</strong><small>Owner / CEO</small></div></div>
     </aside>
 
@@ -379,7 +384,14 @@
               <div class="target-field"><label>Seat hold duration (minutes)</label><input id="ownerSeatHold" type="number" min="1" value="{{ $controls['seat_hold_minutes'] }}"><small>Checkout reservation window</small></div>
               <div class="target-field"><label>Payment merchant</label><select id="ownerMerchant"><option @selected($controls['payment_merchant'] === 'Stripe')>Stripe</option><option @selected($controls['payment_merchant'] === 'PayPal')>PayPal</option><option @selected($controls['payment_merchant'] === 'Zelle')>Zelle</option><option @selected($controls['payment_merchant'] === 'Other')>Other</option></select><small>Active checkout provider</small></div>
               <div class="target-field"><label>Payment mode</label><select id="ownerPaymentMode"><option @selected($controls['payment_mode'] === 'Live')>Live</option><option @selected($controls['payment_mode'] === 'Test')>Test</option><option @selected($controls['payment_mode'] === 'Disabled')>Disabled</option></select><small>Secret keys remain server-side</small></div>
-              <div class="target-field">
+              @foreach(\App\Models\Program::orderBy('sort_order')->get() as $prog)
+            <div class="target-field">
+              <label>{{ $prog->name }} price ($)</label>
+              <input class="ownerPrice" data-program="{{ $prog->id }}" type="number" min="1" step="1" value="{{ $prog->price_cents / 100 }}">
+              <small>Tuition charged at enrollment{{ $prog->is_active ? '' : ' · programme inactive' }}</small>
+            </div>
+            @endforeach
+            <div class="target-field">
               <label>Stripe publishable key</label>
               <input id="ownerStripeKey" autocomplete="off" spellcheck="false" placeholder="{{ $controls['stripe_key'] ?? 'pk_live_…' }}">
               <small>{{ $controls['stripe_key'] ? 'Saved · leave blank to keep' : 'Not set' }}</small>

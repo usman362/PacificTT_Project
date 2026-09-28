@@ -47,6 +47,7 @@
     });
   });
   document.querySelectorAll('nav button[data-href]').forEach(b => b.addEventListener('click', () => { location.href = b.dataset.href; }));
+  document.querySelectorAll('nav button[data-logout]').forEach(b => b.addEventListener('click', () => $('logoutForm').submit()));
 
   /* ── Monthly Seat Target model ───────────────────────────────────── */
   let enrollments = Number(window.PTT.enrolledThisMonth || 0);
@@ -358,6 +359,7 @@
         seats_per_instructor: +$('ownerSeatsPerInstructor').value, deposit_percent: +$('ownerDepositPercent').value,
         seat_hold_minutes: +$('ownerSeatHold').value, payment_merchant: $('ownerMerchant').value,
         payment_mode: $('ownerPaymentMode').value,
+        prices: Object.fromEntries([...document.querySelectorAll('.ownerPrice')].map(i => [i.dataset.program, Number(i.value)])),
         ...Object.fromEntries(Object.entries(keys).filter(([, v]) => v))
       });
       // Clear the typed keys; show only their masked form from now on.

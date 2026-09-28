@@ -33,8 +33,11 @@
 <div class="navgroup">OWNER</div>
 <button data-href="{{ route('admin.owner.dashboard') }}">Owner Dashboard</button>
 @endif
+<div class="navgroup">ACCOUNT</div>
+<button data-logout>Sign out</button>
   </nav>
   <div class="foot">PacificTT.com<br>© 2026 PACIFIC TRADE TECH™</div>
+  <form id="logoutForm" method="POST" action="{{ route('admin.logout') }}" hidden>@csrf</form>
 </aside>
 
 <main>

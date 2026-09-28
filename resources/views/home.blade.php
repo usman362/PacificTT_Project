@@ -34,7 +34,7 @@
  </div>
  <div class="compare-grid">
   <article class="program-card" data-program="{{ $programs->firstWhere('slug','plc-electrical-controls')?->id }}" data-title="PLC + Electrical Controls">
-   <div class="pc-head"><div class="eyebrow">Core Program</div><h3>PLC + Electrical Controls</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">$1,495 <small>/ STUDENT</small></div></div>
+   <div class="pc-head"><div class="eyebrow">Core Program</div><h3>PLC + Electrical Controls</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">{{ $programs->firstWhere('slug','plc-electrical-controls')?->price_label ?? '$1,495' }} <small>/ STUDENT</small></div></div>
    <div class="features">
     <div class="feature"><span class="yes">✓</span><span>Industrial electrical fundamentals</span></div>
     <div class="feature"><span class="yes">✓</span><span>Control wiring & schematics</span></div>
@@ -50,7 +50,7 @@
 
   <article class="program-card featured" data-program="{{ $programs->firstWhere('slug','advanced-plc-automation')?->id }}" data-title="Advanced PLC / Automation">
    <div class="badge">ADVANCED</div>
-   <div class="pc-head"><div class="eyebrow">Advanced Program</div><h3>Advanced PLC / Automation</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">$2,500 <small>/ STUDENT</small></div></div>
+   <div class="pc-head"><div class="eyebrow">Advanced Program</div><h3>Advanced PLC / Automation</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">{{ $programs->firstWhere('slug','advanced-plc-automation')?->price_label ?? '$2,500' }} <small>/ STUDENT</small></div></div>
    <div class="features">
     <div class="feature"><span class="yes">✓</span><span>Industrial electrical fundamentals</span></div>
     <div class="feature"><span class="yes">✓</span><span>Control wiring & schematics</span></div>
@@ -148,7 +148,7 @@
  <div class="waiver-head"><div class="eyebrow">Required before checkout</div><h2>Student Training Waiver & Acknowledgment</h2><p>Review, complete, and sign below. Checkout remains locked until this acknowledgment is completed.</p></div>
  <div class="waiver-scroll">
   <h3>PACIFIC TRADE TECH™ — Training Disclosure</h3>
-  <strong>Private, non-degree vocational training.</strong> Each enrollment is one standalone four (4) hour course. Instruction may include PLC, electrical controls, automation, and HMI topics. Core total charges are <strong>$1,495</strong>; Advanced total charges are <strong>$2,500</strong>. No state/federal student financial aid is offered or accepted for these programs. Successful completion may result in a <strong>Certificate of Completion only</strong>. Public enrollment is permitted. Repeat visits/training are separate paid enrollments.
+  <strong>Private, non-degree vocational training.</strong> Each enrollment is one standalone four (4) hour course. Instruction may include PLC, electrical controls, automation, and HMI topics. Core total charges are <strong>{{ $programs->firstWhere('slug','plc-electrical-controls')?->price_label ?? '$1,495' }}</strong>; Advanced total charges are <strong>{{ $programs->firstWhere('slug','advanced-plc-automation')?->price_label ?? '$2,500' }}</strong>. No state/federal student financial aid is offered or accepted for these programs. Successful completion may result in a <strong>Certificate of Completion only</strong>. Public enrollment is permitted. Repeat visits/training are separate paid enrollments.
   <h3>Nature of Training & Assumption of Risk</h3>
   I understand that hands-on industrial training may involve PLCs, HMIs, control panels, relays, contactors, power supplies, motors, VFDs, sensors, actuators, pneumatic devices, electrical conductors, test instruments, tools, machinery, and energized or de-energized training equipment. Risks may include electrical shock or burns, cuts, pinch/crush hazards, moving equipment, stored pneumatic/mechanical energy, slips/falls, tool injuries, equipment malfunction, property damage, serious bodily injury, and in rare circumstances death. I voluntarily participate and assume inherent and reasonably foreseeable risks to the extent permitted by California law.
   <h3>Safety Responsibilities</h3>

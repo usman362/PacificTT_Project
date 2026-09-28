@@ -101,7 +101,10 @@ class OwnerController extends Controller
             'stripe_key'            => ['nullable', 'string', 'max:255', 'regex:/^pk_(live|test)_[A-Za-z0-9]+$/'],
             'stripe_secret'         => ['nullable', 'string', 'max:255', 'regex:/^(sk|rk)_(live|test)_[A-Za-z0-9]+$/'],
             'stripe_webhook_secret' => ['nullable', 'string', 'max:255', 'regex:/^whsec_[A-Za-z0-9]+$/'],
+            'prices'                => ['sometimes', 'array'],
+            'prices.*'              => ['required', 'numeric', 'min:1', 'max:100000'],
         ], [
+            'prices.*.min'                => 'A programme price must be at least $1.',
             'stripe_key.regex'            => 'The publishable key starts with pk_live_ or pk_test_.',
             'stripe_secret.regex'         => 'The secret key starts with sk_live_ or sk_test_ (or a restricted rk_ key).',
             'stripe_webhook_secret.regex' => 'The webhook signing secret starts with whsec_.',
@@ -123,6 +126,11 @@ class OwnerController extends Controller
 
         foreach (['seats_per_instructor', 'deposit_percent', 'seat_hold_minutes', 'payment_merchant', 'payment_mode'] as $k) {
             Setting::put($k, (string) $data[$k]);
+        }
+        // Tuition per programme. New enrollments are charged the new price;
+        // existing enrollments keep the tuition they signed up at.
+        foreach ($data['prices'] ?? [] as $programId => $dollars) {
+            Program::whereKey((int) $programId)->update(['price_cents' => (int) round($dollars * 100)]);
         }
         foreach (OwnerSettings::SECRETS as $k) {
             if (! empty($data[$k])) {
