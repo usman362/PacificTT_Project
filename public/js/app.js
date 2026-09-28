@@ -239,13 +239,55 @@
     checkAvailability();
   });
 
-  document.querySelectorAll('.choose').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var id = btn.dataset.programId;
-      if (id) { $('program').value = id; }
+  /* ── program cards open the enrollment form in a modal ─────────────── */
+  var enrollModal      = $('enrollModal');
+  var enrollModalBody  = $('enrollModalBody');
+  var enrollModalTitle = $('enrollModalTitle');
+  var enrollmentForm   = $('enrollmentForm');
+  var enrollmentHome   = document.createComment('enrollment-form-home');
+  enrollmentForm.parentNode.insertBefore(enrollmentHome, enrollmentForm);
+
+  function openEnrollmentModal(card) {
+    // Restore the form if the modal is opened again after a completed enrollment.
+    enrollmentForm.style.display = '';
+    var selected = card.dataset.program || '';
+    enrollModalTitle.textContent = (card.dataset.title || 'Program Enrollment') + ' · Enrollment';
+    enrollModalBody.appendChild(enrollmentForm);
+    var programField = $('program');
+    if (selected && [].some.call(programField.options, function (o) { return o.value === selected; })) {
+      programField.value = selected;
       updateProgress();
-      showStep(0);
+      checkAvailability();
+    }
+    showStep(0);
+    enrollModal.classList.add('open');
+    enrollModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+  }
+
+  function closeEnrollmentModal() {
+    enrollModal.classList.remove('open');
+    enrollModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    enrollmentHome.parentNode.insertBefore(enrollmentForm, enrollmentHome.nextSibling);
+  }
+
+  document.querySelectorAll('.program-card').forEach(function (card) {
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', 'Open enrollment for ' + (card.dataset.title || 'this program'));
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('.hvac-arrow,.hvac-dot')) return;
+      openEnrollmentModal(card);
     });
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnrollmentModal(card); }
+    });
+  });
+  $('enrollModalClose').addEventListener('click', closeEnrollmentModal);
+  enrollModal.addEventListener('click', function (e) { if (e.target === enrollModal) closeEnrollmentModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && enrollModal.classList.contains('open')) closeEnrollmentModal();
   });
 
   updateProgress();
@@ -253,6 +295,7 @@
   window.PTTApi = api;
   window.PTTMoney = money;
   window.PTTFirstError = firstError;
+  window.PTTCloseEnrollmentModal = closeEnrollmentModal;
 })();
 
 /* ── waiver, checkout and verification ─────────────────────────────── */
@@ -340,9 +383,11 @@
     $('waiverSchedule').value = nice + ' · ' + sessionField.value;
 
     form.style.display = 'none';
+    // Enrollment is complete: dismiss the program modal before showing the waiver.
+    if (window.PTTCloseEnrollmentModal) window.PTTCloseEnrollmentModal();
     waiver.classList.add('active');
     setTimeout(sizeSignaturePad, 80);
-    window.scrollTo({ top: waiver.offsetTop - 85, behavior: 'smooth' });
+    setTimeout(function () { window.scrollTo({ top: waiver.offsetTop - 85, behavior: 'smooth' }); }, 60);
   });
 
   /* ── waiver → server ─────────────────────────────────────────────── */
@@ -433,7 +478,7 @@
     stripe = window.Stripe(cfg.stripeKey);
     elements = stripe.elements();
     cardElement = elements.create('card', {
-      style: { base: { color: '#f5f7fa', fontSize: '16px', '::placeholder': { color: '#8ea0b5' } } }
+      style: { base: { color: '#17202a', fontSize: '16px', '::placeholder': { color: '#8b98a5' } } }
     });
     cardElement.mount('#stripe-card-element');
     cardElement.on('change', function (e) {
@@ -640,4 +685,54 @@
   });
 
   start();
+})();
+
+/* ── Coming-soon course sliders (HVAC/R and rectifier cards) ───────── */
+(function () {
+  'use strict';
+
+  var autoplay = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function courseSlider(sliderId, trackId, dotsId, counterId, prevId, nextId, label) {
+    var track   = document.getElementById(trackId);
+    var dots    = document.getElementById(dotsId);
+    var counter = document.getElementById(counterId);
+    var offers  = [].slice.call(document.querySelectorAll('#' + sliderId + ' .hvac-offer'));
+    if (!track || !dots || !offers.length) return;
+
+    var index = 0, timer = null;
+
+    offers.forEach(function (_, i) {
+      var dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'hvac-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Show ' + label + ' course ' + (i + 1));
+      dot.addEventListener('click', function () { set(i, true); });
+      dots.appendChild(dot);
+    });
+
+    function set(i, restart) {
+      index = (i + offers.length) % offers.length;
+      track.style.transform = 'translateX(-' + (index * 100) + '%)';
+      [].slice.call(dots.children).forEach(function (d, n) { d.classList.toggle('active', n === index); });
+      if (counter) counter.textContent = (index + 1) + ' / ' + offers.length;
+      if (restart) start();
+    }
+
+    function start() {
+      clearInterval(timer);
+      if (!autoplay) return;
+      timer = setInterval(function () { set(index + 1); }, 5000);
+    }
+
+    document.getElementById(prevId).addEventListener('click', function () { set(index - 1, true); });
+    document.getElementById(nextId).addEventListener('click', function () { set(index + 1, true); });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) { clearInterval(timer); } else { start(); }
+    });
+    start();
+  }
+
+  courseSlider('hvacOfferSlider', 'hvacOfferTrack', 'hvacDots', 'hvacCounter', 'hvacPrev', 'hvacNext', 'HVAC/R');
+  courseSlider('rectifierOfferSlider', 'rectifierOfferTrack', 'rectifierDots', 'rectifierCounter', 'rectifierPrev', 'rectifierNext', 'rectifier');
 })();

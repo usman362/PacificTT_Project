@@ -33,8 +33,8 @@
   <p>See exactly what is included before starting enrollment.</p>
  </div>
  <div class="compare-grid">
-  <article class="program-card">
-   <div class="pc-head"><div class="eyebrow">Core Program</div><h3>PLC + Electrical Controls</h3><div class="price">$1,495 <small>/ STUDENT</small></div></div>
+  <article class="program-card" data-program="{{ $programs->firstWhere('slug','plc-electrical-controls')?->id }}" data-title="PLC + Electrical Controls">
+   <div class="pc-head"><div class="eyebrow">Core Program</div><h3>PLC + Electrical Controls</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">$1,495 <small>/ STUDENT</small></div></div>
    <div class="features">
     <div class="feature"><span class="yes">✓</span><span>Industrial electrical fundamentals</span></div>
     <div class="feature"><span class="yes">✓</span><span>Control wiring & schematics</span></div>
@@ -46,12 +46,11 @@
     <div class="feature"><span class="no">✕</span><span>Advanced automation sequencing</span></div>
     <div class="feature"><span class="no">✕</span><span>HMI design & programming</span></div>
    </div>
-   <button class="choose" type="button" data-program-id="{{ $programs->firstWhere('slug','plc-electrical-controls')?->id }}">CHOOSE THIS PROGRAM →</button>
   </article>
 
-  <article class="program-card featured">
+  <article class="program-card featured" data-program="{{ $programs->firstWhere('slug','advanced-plc-automation')?->id }}" data-title="Advanced PLC / Automation">
    <div class="badge">ADVANCED</div>
-   <div class="pc-head"><div class="eyebrow">Advanced Program</div><h3>Advanced PLC / Automation</h3><div class="price">$2,500 <small>/ STUDENT</small></div></div>
+   <div class="pc-head"><div class="eyebrow">Advanced Program</div><h3>Advanced PLC / Automation</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">$2,500 <small>/ STUDENT</small></div></div>
    <div class="features">
     <div class="feature"><span class="yes">✓</span><span>Industrial electrical fundamentals</span></div>
     <div class="feature"><span class="yes">✓</span><span>Control wiring & schematics</span></div>
@@ -63,11 +62,58 @@
     <div class="feature"><span class="yes">✓</span><span>Advanced automation sequencing</span></div>
     <div class="feature"><span class="yes">✓</span><span>HMI design & programming</span></div>
    </div>
-   <button class="choose" type="button" data-program-id="{{ $programs->firstWhere('slug','advanced-plc-automation')?->id }}">CHOOSE THIS PROGRAM →</button>
+  </article>
+
+  <article class="program-card coming-soon hvacr-coming-soon" data-title="HVAC/R Service & Systems Training">
+   <div class="badge">COMING SOON</div>
+   <div class="pc-head"><div class="eyebrow">HVAC/R + Industrial Systems</div><h3>HVAC/R Service &amp; Systems Training</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">COMING SOON <small>/ HANDS-ON TRAINING</small></div></div>
+   <div class="hvac-offer-slider" id="hvacOfferSlider">
+    <button class="hvac-arrow hvac-prev" id="hvacPrev" type="button" aria-label="Previous HVAC/R course">‹</button>
+    <div class="hvac-offer-viewport">
+     <div class="hvac-offer-track" id="hvacOfferTrack">
+      <div class="hvac-offer"><h4>Mini-Split Systems</h4><p>Hands-on training focused on ductless mini-split installation, commissioning, electrical controls and service troubleshooting.</p><ul class="hvac-offer-list"><li>Installation &amp; startup procedures</li><li>Refrigeration cycle &amp; system operation</li><li>Electrical controls &amp; communication wiring</li><li>Diagnostics, charging &amp; troubleshooting</li></ul></div>
+      <div class="hvac-offer"><h4>Commercial Chillers</h4><p>Develop practical skills for understanding, operating and troubleshooting commercial chilled-water equipment and controls.</p><ul class="hvac-offer-list"><li>Chilled-water system fundamentals</li><li>Compressors, pumps &amp; heat exchangers</li><li>Controls, sensors &amp; safety circuits</li><li>Operational diagnostics &amp; troubleshooting</li></ul></div>
+      <div class="hvac-offer"><h4>Packaged Air Units</h4><p>Service-focused training for commercial packaged and rooftop HVAC equipment from sequence of operation through diagnostics.</p><ul class="hvac-offer-list"><li>Heating &amp; cooling sequence of operation</li><li>Airflow, motors, blowers &amp; components</li><li>Electrical controls &amp; safety circuits</li><li>Startup, maintenance &amp; fault diagnosis</li></ul></div>
+      <div class="hvac-offer"><h4>Compressed Air Dryers</h4><p>Industrial training covering moisture removal, air treatment and troubleshooting of compressed-air drying systems.</p><ul class="hvac-offer-list"><li>Refrigerated &amp; desiccant dryer operation</li><li>Filtration &amp; moisture separation</li><li>Dew point &amp; air-quality fundamentals</li><li>Preventive maintenance &amp; troubleshooting</li></ul></div>
+     </div>
+    </div>
+    <button class="hvac-arrow hvac-next" id="hvacNext" type="button" aria-label="Next HVAC/R course">›</button>
+    <div class="hvac-counter" id="hvacCounter">1 / 4</div>
+   </div>
+   <div class="hvac-dots" id="hvacDots"></div>
+   <div class="coming-note">UPCOMING PROGRAM · Browse each hands-on HVAC/R and industrial systems course.</div>
+  </article>
+
+  <article class="program-card coming-soon hvacr-coming-soon" data-title="Industrial Rectifier Training">
+   <div class="badge">COMING SOON</div>
+   <div class="pc-head"><div class="eyebrow">Metal Finishing + Power Systems</div><h3>Industrial Rectifier Training</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">COMING SOON <small>/ HANDS-ON TRAINING</small></div></div>
+   <div class="hvac-offer-slider" id="rectifierOfferSlider">
+    <button class="hvac-arrow hvac-prev" id="rectifierPrev" type="button" aria-label="Previous rectifier course">‹</button>
+    <div class="hvac-offer-viewport">
+     <div class="hvac-offer-track" id="rectifierOfferTrack">
+      <div class="hvac-offer"><h4>Rectifier Fundamentals</h4><p>Hands-on training focused on industrial DC rectifiers used in electroplating, anodizing and metal-finishing processes.</p><ul class="hvac-offer-list"><li>AC input &amp; DC output fundamentals</li><li>Voltage, current &amp; polarity</li><li>Transformer and rectification principles</li><li>Safe startup, shutdown &amp; operation</li></ul></div>
+      <div class="hvac-offer"><h4>Controls &amp; Automation</h4><p>Understand how rectifiers interface with PLCs, remote controls and automated metal-finishing process equipment.</p><ul class="hvac-offer-list"><li>PLC start/stop &amp; permissive circuits</li><li>Analog voltage &amp; current commands</li><li>4–20 mA / 0–10 V signals</li><li>Interlocks, alarms &amp; remote operation</li></ul></div>
+      <div class="hvac-offer"><h4>DC Output &amp; Ripple</h4><p>Learn to evaluate rectifier output quality and understand how DC voltage, current and ripple affect finishing processes.</p><ul class="hvac-offer-list"><li>DC voltage &amp; amperage measurements</li><li>AC ripple measurement &amp; calculation</li><li>Load testing &amp; output verification</li><li>Process-related power quality diagnostics</li></ul></div>
+      <div class="hvac-offer"><h4>Troubleshooting &amp; Repair</h4><p>Develop a systematic approach to diagnosing industrial rectifier faults from incoming power through the DC output.</p><ul class="hvac-offer-list"><li>Fuses, breakers &amp; power components</li><li>SCR / diode troubleshooting concepts</li><li>Cooling, thermal &amp; overcurrent faults</li><li>Electrical testing &amp; fault isolation</li></ul></div>
+     </div>
+    </div>
+    <button class="hvac-arrow hvac-next" id="rectifierNext" type="button" aria-label="Next rectifier course">›</button>
+    <div class="hvac-counter" id="rectifierCounter">1 / 4</div>
+   </div>
+   <div class="hvac-dots" id="rectifierDots"></div>
+   <div class="coming-note">UPCOMING PROGRAM · Browse hands-on industrial rectifier training for metal-finishing applications.</div>
   </article>
  </div>
 </section>
 
+
+<div class="enroll-modal" id="enrollModal" aria-hidden="true">
+ <div class="enroll-modal-box" role="dialog" aria-modal="true" aria-label="Program enrollment">
+  <div class="enroll-modal-title" id="enrollModalTitle">Program Enrollment</div>
+  <button class="enroll-modal-close" id="enrollModalClose" type="button" aria-label="Close enrollment">×</button>
+  <div id="enrollModalBody"></div>
+ </div>
+</div>
 
 <section class="enroll-title"><div class="eyebrow">Quick enrollment</div><h2>Let's get you scheduled.</h2><p>Complete each requirement to move forward.</p></section>
 

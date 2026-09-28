@@ -55,8 +55,10 @@ input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px #ffad0017}
 .compare-head{text-align:center;margin-bottom:20px}.compare-head h2{font-size:clamp(30px,5vw,46px);margin:7px 0}.compare-head p{color:var(--muted);margin:0}
 .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .program-card{border:1px solid #2c4055;border-radius:20px;background:linear-gradient(145deg,#121d2a,#080e16);overflow:hidden;box-shadow:0 22px 45px #0006;position:relative}
-.program-card.featured{border-color:#9d6b0d;box-shadow:0 22px 50px #0007,0 0 0 1px #ffad0025}
+.hvacr-coming-soon{grid-column:auto}.hvac-offer-slider{position:relative;padding:10px 42px 12px;min-height:376px}.hvac-offer-slider .hvac-offer-viewport{min-height:340px}.hvac-offer{min-width:100%;padding:0}.hvac-offer h4{font-size:18px;margin:0 0 7px;color:#17212b}.hvac-offer p{margin:0 0 8px;color:#4b5563;font-size:12px;line-height:1.45}.hvac-offer-list{margin:0;padding:0;list-style:none}.hvac-offer-list li{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid #e6e9ee;color:#4b5563;font-size:13px}.hvac-offer-list li:before{content:"✓";font-size:17px;font-weight:950;color:#22a35a}.hvac-offer-list li:last-child{border-bottom:0}.hvac-arrow{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border:1px solid #d7dce2;border-radius:50%;background:#fff;color:#17212b;font-size:21px;line-height:1;cursor:pointer;box-shadow:0 5px 14px rgba(31,45,61,.10)}.hvac-offer-viewport{overflow:hidden}.hvac-offer-track{display:flex;transition:transform .45s cubic-bezier(.22,.8,.25,1)}.hvac-arrow:hover{border-color:var(--a);color:#b66b00}.hvac-prev{left:12px}.hvac-next{right:12px}.hvac-dots{display:flex;justify-content:center;gap:7px;padding:0 0 17px}.hvac-dot{width:8px;height:8px;border:0;border-radius:50%;padding:0;background:#c7cdd5;cursor:pointer}.hvac-dot.active{background:var(--a)}.hvac-counter{text-align:center;color:#7a8491;font-size:10px;font-weight:900;letter-spacing:.1em;margin-top:10px}.coming-note{margin:0 18px 18px;padding:11px 13px;border-radius:10px;background:#f7f8fa;color:#687386;font-size:11px;font-weight:800}@media(max-width:680px){.hvac-offer-slider{padding:15px 44px 18px}.hvac-offer h4{font-size:20px}.hvac-offer p{font-size:13px}}
+.program-card.coming-soon{opacity:.96}.coming-soon .pc-head{padding-right:105px;min-height:119px}.coming-soon .price{font-size:18px;color:#687386}.coming-soon .feature{color:#4b5563}.program-card.featured{border-color:#9d6b0d;box-shadow:0 22px 50px #0007,0 0 0 1px #ffad0025}
 .badge{position:absolute;right:14px;top:14px;background:linear-gradient(145deg,#ffd149,#ff8b00);color:#111;border-radius:30px;padding:5px 9px;font-size:9px;font-weight:950;letter-spacing:.08em}
+.program-duration{font-size:11px;font-weight:900;letter-spacing:.1em;color:var(--muted);margin:0 0 7px}
 .pc-head{padding:22px 20px 17px;border-bottom:1px solid #26384a}.pc-head h3{font-size:23px;margin:5px 0}.price{font-size:30px;font-weight:950;color:var(--a)}.price small{font-size:11px;color:#788ba0;font-weight:700}
 .features{padding:10px 18px 16px}.feature{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid #1c2a38;color:#a9b7c7;font-size:13px}.feature:last-child{border:0}
 .yes,.no{font-size:17px;font-weight:950}.yes{color:#69d28e}.no{color:#ff7777}
@@ -112,6 +114,52 @@ input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px #ffad0017}
 
 /* REQUIRED STUDENT WAIVER */
 .waiver{display:none;max-width:820px;margin:0 auto 70px;padding:18px;border:1px solid #293b50;border-radius:22px;background:linear-gradient(145deg,#121d2a,#080e16);box-shadow:0 28px 60px #0008}.waiver.active{display:block;animation:stepIn .35s ease}.waiver-head{text-align:center;padding:14px 8px 20px}.waiver-head h2{font-size:30px;margin:6px 0}.waiver-head p{color:var(--muted);font-size:12px;line-height:1.55}.waiver-scroll{max-height:360px;overflow:auto;padding:16px;border:1px solid #2c4055;border-radius:14px;background:#09111a;font-size:12px;line-height:1.6;color:#aebccc}.waiver-scroll h3{color:#fff;font-size:14px;margin:18px 0 5px}.waiver-scroll h3:first-child{margin-top:0}.waiver-scroll strong{color:#fff}.waiver-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.waiver-grid .full{grid-column:1/-1}.waiver-grid label{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8ea0b5;margin:0 0 5px}.waiver-grid input{height:46px}.waiver-check{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:12px;border:1px solid #2c4055;border-radius:12px;background:#0a121c;font-size:11px;color:#aebccc;line-height:1.5}.waiver-check input{width:18px;height:18px;flex:0 0 auto;margin-top:1px}.sig-wrap{margin-top:14px}.sig-label{font-size:11px;font-weight:900;color:#dce5ee;margin-bottom:7px}.signature-pad{width:100%;height:150px;display:block;border:1px solid #31465d;border-radius:12px;background:#fff;touch-action:none}.sig-actions{display:flex;justify-content:space-between;align-items:center;margin-top:7px}.sig-actions button{border:0;background:transparent;color:#ffad00;font-weight:900;cursor:pointer}.stamp{font-size:10px;color:#74879b}.inhouse{margin-top:16px;padding:14px;border:1px dashed #516274;border-radius:12px;color:#8495a7;font-size:11px}.inhouse strong{color:#c9d3dc}.waiver-error{display:none;margin-top:12px;color:#ff8b8b;font-size:11px;font-weight:800}.waiver-action{width:100%;margin-top:14px;border:0;border-radius:13px;padding:15px;background:linear-gradient(145deg,#ffd149,#ff8b00);color:#111;font-weight:950;cursor:pointer}@media(max-width:620px){.waiver{padding:10px}.waiver-grid{grid-template-columns:1fr}.waiver-grid .full{grid-column:auto}.waiver-scroll{max-height:310px}}
+
+/* ===== WHITE THEME OVERRIDE ===== */
+:root{--bg:#f5f7fa;--card:#ffffff;--line:#d9e0e7;--txt:#17202a;--muted:#66788a;--a:#d97706;--a2:#f59e0b}
+body{background:linear-gradient(135deg,#ffffff,#f4f7fa);color:var(--txt)}
+header{border-color:#dfe5eb;background:rgba(255,255,255,.94);box-shadow:0 10px 30px rgba(25,40,55,.10)}
+.bar{background:#e6ebf0}.fill{box-shadow:0 0 12px rgba(245,158,11,.25)}
+.hero p,.compare-head p,.enroll-title p,.checkout-head p,.waiver-head p{color:#5f7183}
+.plc{border-color:#cfd8e2;background:linear-gradient(145deg,#eef2f6,#dfe6ed);box-shadow:24px 28px 45px rgba(31,45,61,.15),inset 1px 1px #fff}
+.mod{background:linear-gradient(145deg,#f8fafc,#dfe6ed);border-color:#aebbc8;box-shadow:8px 10px 18px rgba(31,45,61,.16)}
+.mod:after{color:#5f7183}
+.hero-slider{border-color:#d5dde5;background:#fff;box-shadow:0 18px 40px rgba(31,45,61,.14)}
+.slide:after{background:linear-gradient(180deg,transparent 42%,rgba(255,255,255,.94) 100%)}
+.slide-caption b{color:#17202a}.slide-caption span{color:#526476}
+.slider-btn{border-color:#cbd5df;background:rgba(255,255,255,.92);color:#17202a}
+.slider-dot{background:#aeb9c4}.slider-dot.active{background:var(--a);box-shadow:0 0 8px rgba(217,119,6,.35)}
+.form,.program-card,.checkout,.waiver,.verify-box{border-color:#d8e0e8;background:#fff;box-shadow:0 18px 45px rgba(31,45,61,.10)}
+.program-card.coming-soon{opacity:.96}.coming-soon .pc-head{padding-right:105px;min-height:119px}.coming-soon .price{font-size:18px;color:#687386}.coming-soon .feature{color:#4b5563}.program-card.featured{border-color:#e0a63a;box-shadow:0 18px 45px rgba(31,45,61,.11),0 0 0 1px rgba(245,158,11,.18)}
+.pc-head{border-bottom-color:#e2e7ec}.price small{color:#6f8091}
+.feature{border-bottom-color:#e7ebef;color:#445668}.choose{background:#edf1f5;color:#17202a}
+input,select{border-color:#cbd5df;background:#fff;color:#17202a}
+input::placeholder{color:#8b98a5} select option{background:#fff;color:#17202a}
+.note,.secure,.verify-help,.stamp{color:#718294}
+.availability{border-color:#cbd5df;background:#f7f9fb;color:#526476}.availability.open{border-color:#8fc9a4;color:#247446;background:#effaf3}.availability.closed{border-color:#e2a0a0;color:#b83d3d;background:#fff3f3}
+.order{border-color:#d7dfe7;background:#f8fafc}.order-row{color:#526476}.order-row strong{color:#17202a}.order-row.total{border-top-color:#d7dfe7}
+.pay-card{border-color:#cbd5df;background:#fff}.pay-desc{color:#637587}
+.deposit{border-color:#e4bd72;background:#fff8e8;color:#8a5a09}
+.seat-timer{border-color:#e4bd72;background:#fff8e8}.seat-timer-copy{color:#8a6a2c}.seat-timer-copy strong{color:#17202a}
+.expired-overlay{background:rgba(239,243,247,.96)}.expired-box{border-color:#e0a0a0;background:#fff;box-shadow:0 30px 80px rgba(31,45,61,.20)}.expired-box p{color:#617386}
+.verify-section{border-top-color:#dfe5eb}.verify-head p{color:#607284}.verify-label,.sig-label{color:#263746}
+.verify-result{border-color:#d7dfe7;background:#f8fafc}.student-photo{background:linear-gradient(145deg,#f3f6f9,#e3e9ef);color:#657789;border-color:#cbd5df}.student-meta{color:#5f7183}
+.waiver-scroll{border-color:#d7dfe7;background:#f8fafc;color:#45586a}.waiver-scroll h3,.waiver-scroll strong{color:#17202a}.waiver-grid label{color:#66788a}.waiver-check{border-color:#d7dfe7;background:#f8fafc;color:#45586a}.inhouse{border-color:#aebbc8;color:#66788a}.inhouse strong{color:#263746}
+.site-footer{color:#66788a}.site-footer strong,.site-footer .contact{color:#394b5c}
+
+
+/* ===== ENROLLMENT MODAL ===== */
+.program-card{cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}
+.program-card:hover{transform:translateY(-3px)}
+.enroll-modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(3,8,14,.78);backdrop-filter:blur(8px);padding:24px;overflow:auto}
+.enroll-modal.open{display:flex;align-items:flex-start;justify-content:center}
+.enroll-modal-box{position:relative;width:min(700px,100%);margin:auto;background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 90px rgba(0,0,0,.38);padding:48px 14px 14px}
+.enroll-modal-close{position:absolute;right:14px;top:12px;width:36px;height:36px;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--txt);font-size:24px;line-height:1;cursor:pointer}
+.enroll-modal-title{position:absolute;left:20px;top:18px;font-size:11px;font-weight:950;letter-spacing:.12em;color:var(--a);text-transform:uppercase}
+.enroll-modal .form{margin:0 auto;border:0;box-shadow:none;background:transparent;max-width:650px}
+body.modal-open{overflow:hidden}
+@media(max-width:620px){.enroll-modal{padding:8px}.enroll-modal-box{border-radius:16px;padding:44px 4px 4px}}
+
 </style>
 </head>
 <body>
@@ -147,8 +195,8 @@ input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px #ffad0017}
   <p>See exactly what is included before starting enrollment.</p>
  </div>
  <div class="compare-grid">
-  <article class="program-card">
-   <div class="pc-head"><div class="eyebrow">Core Program</div><h3>PLC + Electrical Controls</h3><div class="price">$1,495 <small>/ STUDENT</small></div></div>
+  <article class="program-card" data-program="PLC + Electrical Controls — $1,495" data-title="PLC + Electrical Controls">
+   <div class="pc-head"><div class="eyebrow">Core Program</div><h3>PLC + Electrical Controls</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">$1,495 <small>/ STUDENT</small></div></div>
    <div class="features">
     <div class="feature"><span class="yes">✓</span><span>Industrial electrical fundamentals</span></div>
     <div class="feature"><span class="yes">✓</span><span>Control wiring & schematics</span></div>
@@ -162,9 +210,9 @@ input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px #ffad0017}
    </div>
   </article>
 
-  <article class="program-card featured">
+  <article class="program-card featured" data-program="Advanced PLC / Automation — $2,500" data-title="Advanced PLC / Automation">
    <div class="badge">ADVANCED</div>
-   <div class="pc-head"><div class="eyebrow">Advanced Program</div><h3>Advanced PLC / Automation</h3><div class="price">$2,500 <small>/ STUDENT</small></div></div>
+   <div class="pc-head"><div class="eyebrow">Advanced Program</div><h3>Advanced PLC / Automation</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">$2,500 <small>/ STUDENT</small></div></div>
    <div class="features">
     <div class="feature"><span class="yes">✓</span><span>Industrial electrical fundamentals</span></div>
     <div class="feature"><span class="yes">✓</span><span>Control wiring & schematics</span></div>
@@ -177,9 +225,57 @@ input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px #ffad0017}
     <div class="feature"><span class="yes">✓</span><span>HMI design & programming</span></div>
    </div>
   </article>
+
+  <article class="program-card coming-soon hvacr-coming-soon" data-title="HVAC/R Service & Systems Training">
+   <div class="badge">COMING SOON</div>
+   <div class="pc-head"><div class="eyebrow">HVAC/R + Industrial Systems</div><h3>HVAC/R Service &amp; Systems Training</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">COMING SOON <small>/ HANDS-ON TRAINING</small></div></div>
+   <div class="hvac-offer-slider" id="hvacOfferSlider">
+    <button class="hvac-arrow hvac-prev" id="hvacPrev" type="button" aria-label="Previous HVAC/R course">‹</button>
+    <div class="hvac-offer-viewport">
+     <div class="hvac-offer-track" id="hvacOfferTrack">
+      <div class="hvac-offer"><h4>Mini-Split Systems</h4><p>Hands-on training focused on ductless mini-split installation, commissioning, electrical controls and service troubleshooting.</p><ul class="hvac-offer-list"><li>Installation &amp; startup procedures</li><li>Refrigeration cycle &amp; system operation</li><li>Electrical controls &amp; communication wiring</li><li>Diagnostics, charging &amp; troubleshooting</li></ul></div>
+      <div class="hvac-offer"><h4>Commercial Chillers</h4><p>Develop practical skills for understanding, operating and troubleshooting commercial chilled-water equipment and controls.</p><ul class="hvac-offer-list"><li>Chilled-water system fundamentals</li><li>Compressors, pumps &amp; heat exchangers</li><li>Controls, sensors &amp; safety circuits</li><li>Operational diagnostics &amp; troubleshooting</li></ul></div>
+      <div class="hvac-offer"><h4>Packaged Air Units</h4><p>Service-focused training for commercial packaged and rooftop HVAC equipment from sequence of operation through diagnostics.</p><ul class="hvac-offer-list"><li>Heating &amp; cooling sequence of operation</li><li>Airflow, motors, blowers &amp; components</li><li>Electrical controls &amp; safety circuits</li><li>Startup, maintenance &amp; fault diagnosis</li></ul></div>
+      <div class="hvac-offer"><h4>Compressed Air Dryers</h4><p>Industrial training covering moisture removal, air treatment and troubleshooting of compressed-air drying systems.</p><ul class="hvac-offer-list"><li>Refrigerated &amp; desiccant dryer operation</li><li>Filtration &amp; moisture separation</li><li>Dew point &amp; air-quality fundamentals</li><li>Preventive maintenance &amp; troubleshooting</li></ul></div>
+     </div>
+    </div>
+    <button class="hvac-arrow hvac-next" id="hvacNext" type="button" aria-label="Next HVAC/R course">›</button>
+    <div class="hvac-counter" id="hvacCounter">1 / 4</div>
+   </div>
+   <div class="hvac-dots" id="hvacDots"></div>
+   <div class="coming-note">UPCOMING PROGRAM · Browse each hands-on HVAC/R and industrial systems course.</div>
+  </article>
+
+  <article class="program-card coming-soon hvacr-coming-soon" data-title="Industrial Rectifier Training">
+   <div class="badge">COMING SOON</div>
+   <div class="pc-head"><div class="eyebrow">Metal Finishing + Power Systems</div><h3>Industrial Rectifier Training</h3><div class="program-duration">4-HOUR COURSE</div><div class="price">COMING SOON <small>/ HANDS-ON TRAINING</small></div></div>
+   <div class="hvac-offer-slider" id="rectifierOfferSlider">
+    <button class="hvac-arrow hvac-prev" id="rectifierPrev" type="button" aria-label="Previous rectifier course">‹</button>
+    <div class="hvac-offer-viewport">
+     <div class="hvac-offer-track" id="rectifierOfferTrack">
+      <div class="hvac-offer"><h4>Rectifier Fundamentals</h4><p>Hands-on training focused on industrial DC rectifiers used in electroplating, anodizing and metal-finishing processes.</p><ul class="hvac-offer-list"><li>AC input &amp; DC output fundamentals</li><li>Voltage, current &amp; polarity</li><li>Transformer and rectification principles</li><li>Safe startup, shutdown &amp; operation</li></ul></div>
+      <div class="hvac-offer"><h4>Controls &amp; Automation</h4><p>Understand how rectifiers interface with PLCs, remote controls and automated metal-finishing process equipment.</p><ul class="hvac-offer-list"><li>PLC start/stop &amp; permissive circuits</li><li>Analog voltage &amp; current commands</li><li>4–20 mA / 0–10 V signals</li><li>Interlocks, alarms &amp; remote operation</li></ul></div>
+      <div class="hvac-offer"><h4>DC Output &amp; Ripple</h4><p>Learn to evaluate rectifier output quality and understand how DC voltage, current and ripple affect finishing processes.</p><ul class="hvac-offer-list"><li>DC voltage &amp; amperage measurements</li><li>AC ripple measurement &amp; calculation</li><li>Load testing &amp; output verification</li><li>Process-related power quality diagnostics</li></ul></div>
+      <div class="hvac-offer"><h4>Troubleshooting &amp; Repair</h4><p>Develop a systematic approach to diagnosing industrial rectifier faults from incoming power through the DC output.</p><ul class="hvac-offer-list"><li>Fuses, breakers &amp; power components</li><li>SCR / diode troubleshooting concepts</li><li>Cooling, thermal &amp; overcurrent faults</li><li>Electrical testing &amp; fault isolation</li></ul></div>
+     </div>
+    </div>
+    <button class="hvac-arrow hvac-next" id="rectifierNext" type="button" aria-label="Next rectifier course">›</button>
+    <div class="hvac-counter" id="rectifierCounter">1 / 4</div>
+   </div>
+   <div class="hvac-dots" id="rectifierDots"></div>
+   <div class="coming-note">UPCOMING PROGRAM · Browse hands-on industrial rectifier training for metal-finishing applications.</div>
+  </article>
  </div>
 </section>
 
+
+<div class="enroll-modal" id="enrollModal" aria-hidden="true">
+ <div class="enroll-modal-box" role="dialog" aria-modal="true" aria-label="Program enrollment">
+  <div class="enroll-modal-title" id="enrollModalTitle">Program Enrollment</div>
+  <button class="enroll-modal-close" id="enrollModalClose" type="button" aria-label="Close enrollment">×</button>
+  <div id="enrollModalBody"></div>
+ </div>
+</div>
 
 <section class="enroll-title"><div class="eyebrow">Quick enrollment</div><h2>Let's get you scheduled.</h2><p>Complete each requirement to move forward.</p></section>
 
@@ -454,9 +550,11 @@ checkoutBtn.addEventListener('click',()=>{
   const niceDate=dateField.value ? new Date(dateField.value+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"}) : "—";
   waiverSchedule.value=niceDate+" · "+sessionField.value;
   form.style.display="none";
+  // Enrollment is complete: dismiss the program modal before showing the waiver.
+  closeEnrollmentModal();
   waiver.classList.add('active');
   setTimeout(sizeSignaturePad,80);
-  window.scrollTo({top:waiver.offsetTop-85,behavior:'smooth'});
+  setTimeout(()=>window.scrollTo({top:waiver.offsetTop-85,behavior:'smooth'}),60);
 });
 function openCheckout(){
   const total=tuition();
@@ -497,6 +595,53 @@ document.querySelectorAll('input[name="payment"]').forEach(r=>{
 });
 
 
+
+// Program cards open the enrollment form in a modal.
+const enrollModal=document.getElementById('enrollModal');
+const enrollModalBody=document.getElementById('enrollModalBody');
+const enrollModalClose=document.getElementById('enrollModalClose');
+const enrollModalTitle=document.getElementById('enrollModalTitle');
+const enrollmentForm=document.getElementById('enrollmentForm');
+const enrollmentHome=document.createComment('enrollment-form-home');
+enrollmentForm.parentNode.insertBefore(enrollmentHome,enrollmentForm);
+
+function openEnrollmentModal(card){
+  // Restore the form if the modal is opened again after a completed enrollment.
+  form.style.display="";
+  const selected=card.dataset.program || '';
+  const title=card.dataset.title || 'Program Enrollment';
+  enrollModalTitle.textContent=title+' · Enrollment';
+  enrollModalBody.appendChild(enrollmentForm);
+  if(selected && [...programField.options].some(o=>o.value===selected)){
+    programField.value=selected;
+    updateProgress();
+  }
+  showStep(0);
+  enrollModal.classList.add('open');
+  enrollModal.setAttribute('aria-hidden','false');
+  document.body.classList.add('modal-open');
+}
+function closeEnrollmentModal(){
+  enrollModal.classList.remove('open');
+  enrollModal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('modal-open');
+  enrollmentHome.parentNode.insertBefore(enrollmentForm,enrollmentHome.nextSibling);
+}
+
+document.querySelectorAll('.program-card').forEach(card=>{
+  card.setAttribute('tabindex','0');
+  card.setAttribute('role','button');
+  card.setAttribute('aria-label','Open enrollment for '+(card.dataset.title||'this program'));
+  card.addEventListener('click',e=>{
+    if(e.target.closest('.hvac-arrow,.hvac-dot')) return;
+    openEnrollmentModal(card);
+  });
+  card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openEnrollmentModal(card);}});
+});
+enrollModalClose.addEventListener('click',closeEnrollmentModal);
+enrollModal.addEventListener('click',e=>{if(e.target===enrollModal)closeEnrollmentModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&enrollModal.classList.contains('open'))closeEnrollmentModal();});
+
 document.querySelectorAll('.choose').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const chosen=btn.dataset.program;
@@ -532,6 +677,66 @@ function startSlider(){
 document.getElementById('sliderPrev').addEventListener('click',()=>setSlide(slideIndex-1,true));
 document.getElementById('sliderNext').addEventListener('click',()=>setSlide(slideIndex+1,true));
 startSlider();
+
+// HVAC/R coming-soon course slider
+const hvacOfferTrack=document.getElementById('hvacOfferTrack');
+const hvacOffers=[...document.querySelectorAll('#hvacOfferSlider .hvac-offer')];
+const hvacDots=document.getElementById('hvacDots');
+const hvacCounter=document.getElementById('hvacCounter');
+let hvacIndex=0, hvacTimer;
+
+hvacOffers.forEach((_,i)=>{
+  const dot=document.createElement('button');
+  dot.type='button';
+  dot.className='hvac-dot'+(i===0?' active':'');
+  dot.setAttribute('aria-label','Show HVAC/R course '+(i+1));
+  dot.addEventListener('click',()=>setHvacOffer(i,true));
+  hvacDots.appendChild(dot);
+});
+function setHvacOffer(i,restart=false){
+  hvacIndex=(i+hvacOffers.length)%hvacOffers.length;
+  hvacOfferTrack.style.transform='translateX(-'+(hvacIndex*100)+'%)';
+  [...hvacDots.children].forEach((d,n)=>d.classList.toggle('active',n===hvacIndex));
+  hvacCounter.textContent=(hvacIndex+1)+' / '+hvacOffers.length;
+  if(restart) startHvacSlider();
+}
+function startHvacSlider(){
+  clearInterval(hvacTimer);
+  hvacTimer=setInterval(()=>setHvacOffer(hvacIndex+1),5000);
+}
+document.getElementById('hvacPrev').addEventListener('click',()=>setHvacOffer(hvacIndex-1,true));
+document.getElementById('hvacNext').addEventListener('click',()=>setHvacOffer(hvacIndex+1,true));
+startHvacSlider();
+
+// Metal-finishing rectifier coming-soon course slider
+const rectifierOfferTrack=document.getElementById('rectifierOfferTrack');
+const rectifierOffers=[...document.querySelectorAll('#rectifierOfferSlider .hvac-offer')];
+const rectifierDots=document.getElementById('rectifierDots');
+const rectifierCounter=document.getElementById('rectifierCounter');
+let rectifierIndex=0, rectifierTimer;
+
+rectifierOffers.forEach((_,i)=>{
+  const dot=document.createElement('button');
+  dot.type='button';
+  dot.className='hvac-dot'+(i===0?' active':'');
+  dot.setAttribute('aria-label','Show rectifier course '+(i+1));
+  dot.addEventListener('click',()=>setRectifierOffer(i,true));
+  rectifierDots.appendChild(dot);
+});
+function setRectifierOffer(i,restart=false){
+  rectifierIndex=(i+rectifierOffers.length)%rectifierOffers.length;
+  rectifierOfferTrack.style.transform='translateX(-'+(rectifierIndex*100)+'%)';
+  [...rectifierDots.children].forEach((d,n)=>d.classList.toggle('active',n===rectifierIndex));
+  rectifierCounter.textContent=(rectifierIndex+1)+' / '+rectifierOffers.length;
+  if(restart) startRectifierSlider();
+}
+function startRectifierSlider(){
+  clearInterval(rectifierTimer);
+  rectifierTimer=setInterval(()=>setRectifierOffer(rectifierIndex+1),5000);
+}
+document.getElementById('rectifierPrev').addEventListener('click',()=>setRectifierOffer(rectifierIndex-1,true));
+document.getElementById('rectifierNext').addEventListener('click',()=>setRectifierOffer(rectifierIndex+1,true));
+startRectifierSlider();
 
 
 const seatClock=document.getElementById('seatClock');
