@@ -85,15 +85,37 @@ specific class's capacity or deactivate it.
 
 ## Deploying to cPanel
 
-1. Upload the project **outside** the web root, e.g. `/home/user/pacifictt`.
-2. Point the domain's document root at `/home/user/pacifictt/public`.
-   If the host will not let you move the docroot, put the contents of `public/`
-   in `public_html` and edit `index.php`'s two `require` paths.
-3. `composer install --no-dev --optimize-autoloader`
-4. Set `.env`: `APP_ENV=production`, `APP_DEBUG=false`, real `APP_URL`, DB, mail, Stripe.
-5. `php artisan migrate --force`, `php artisan storage:link`
-6. `php artisan config:cache route:cache view:cache`
-7. Make `storage/` and `bootstrap/cache/` writable.
+The host keeps the application core **outside** the web root:
+
+```
+/home4/<user>/private       the whole repository (core) — never web-reachable
+/home4/<user>/public_html   only the contents of public/
+```
+
+`public/index.php` finds the core by itself — one level up in development,
+`../private` on the host — so no paths need editing.
+
+**First time**
+
+1. `cd ~ && git clone <repo-url> private`
+2. `cd ~/private && cp .env.example .env`, then set `APP_ENV=production`,
+   `APP_DEBUG=false`, `APP_URL=https://<domain>` (no `/public`), DB and mail.
+3. `composer install --no-dev --optimize-autoloader && php artisan key:generate`
+4. `php artisan migrate --force --seed` — creates the admin account and the
+   starting programmes; change the admin password straight after.
+5. `bash deploy/deploy.sh` — copies `public/` into `public_html` and links uploads.
+6. Make `storage/` and `bootstrap/cache/` writable by PHP.
+
+**Every update**
+
+```bash
+bash ~/private/deploy/deploy.sh
+```
+
+It pulls, installs dependencies, migrates, copies `public/` into
+`public_html` (it never deletes anything already there), links
+`public_html/storage` to the core's uploads, and rebuilds caches. Override the
+folders with `PUBLIC_HTML=...` or the Composer command with `COMPOSER=...`.
 
 ## Notes / limits
 
