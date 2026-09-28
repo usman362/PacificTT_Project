@@ -271,6 +271,14 @@
     }
   
 
+/* The sidebar now holds Daily Operations and Account groups too, which is
+   taller than a laptop screen. The owner card sat absolutely at the bottom
+   and the sidebar could not scroll, so the last links hid behind it. The
+   sidebar scrolls when it must, and the owner card still sits at the bottom
+   whenever there is room. */
+aside { display: flex; flex-direction: column; overflow-y: auto; }
+aside .owner { position: static; margin-top: auto; padding-top: 14px; }
+
 /* ── Owner-entered figures ──────────────────────────────────────────
    The small Edit control on cards whose numbers only the owner knows, and
    the edit dialog, both built from the dashboard's own tokens and modal. */
