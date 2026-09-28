@@ -371,6 +371,18 @@
     } catch (e) { alert(e.message); }
   });
 
+  // Office-screen link: a new one retires the old one straight away.
+  $('newDisplayLink')?.addEventListener('click', async () => {
+    if ($('displayLink').value && !confirm('Create a new link? The current office screen link will stop working.')) return;
+    try {
+      const res = await call('POST', R.displayLink);
+      $('displayLink').value = res.url;
+      $('newDisplayLink').textContent = 'Replace link';
+      $('displayLink').select();
+      flashTarget('Display link created');
+    } catch (e) { alert(e.message); }
+  });
+
   /* ── start ───────────────────────────────────────────────────────── */
   refreshLive();
   loadObjectives();

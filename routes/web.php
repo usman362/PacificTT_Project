@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ConsoleController;
 use App\Http\Controllers\Admin\ConsoleCrudController;
 use App\Http\Controllers\Admin\LiveController;
 use App\Http\Controllers\Admin\OwnerController;
+use App\Http\Controllers\StaffDisplayController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EnrollmentAdminController;
 use App\Http\Controllers\CertificateController;
@@ -64,6 +65,14 @@ Route::post('stripe/webhook', [CheckoutController::class, 'webhook'])->name('str
 
 /*
 |--------------------------------------------------------------------------
+| General Staff Progress display (S1)
+|--------------------------------------------------------------------------
+*/
+Route::get('staff', [StaffDisplayController::class, 'show'])->name('staff.progress');
+Route::get('staff/live', [StaffDisplayController::class, 'live'])->middleware('throttle:60,1')->name('staff.live');
+
+/*
+|--------------------------------------------------------------------------
 | Admin
 |--------------------------------------------------------------------------
 */
@@ -90,6 +99,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('targets',                   [OwnerController::class, 'saveTargets'])->name('targets');
             Route::post('controls',                  [OwnerController::class, 'saveControls'])->name('controls');
             Route::post('figures/{group}',           [OwnerController::class, 'saveFigures'])->name('figures');
+            Route::post('display-link',              [OwnerController::class, 'newDisplayLink'])->name('display-link');
             Route::get('objectives',                 [OwnerController::class, 'objectives'])->name('objectives');
             Route::post('objectives',                [OwnerController::class, 'storeObjective'])->name('objectives.store');
             Route::patch('objectives/{objective}',   [OwnerController::class, 'updateObjective'])->name('objectives.update');

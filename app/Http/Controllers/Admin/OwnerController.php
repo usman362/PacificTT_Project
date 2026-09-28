@@ -49,6 +49,7 @@ class OwnerController extends Controller
             'enroll'        => $enroll,
             'p2'            => $p2,
             'figures'       => OwnerFigures::all(),
+            'displayUrl'    => ($t = Setting::get('staff_display_token')) ? route('staff.progress', ['display' => $t]) : null,
             'bootstrap'     => [
                 'routes' => [
                     'live'           => route('admin.live'),
@@ -58,6 +59,7 @@ class OwnerController extends Controller
                     'targets'        => route('admin.owner.targets'),
                     'controls'       => route('admin.owner.controls'),
                     'figures'        => route('admin.owner.figures', ['group' => '__GROUP__']),
+                    'displayLink'    => route('admin.owner.display-link'),
                 ],
                 'figures'         => OwnerFigures::all(),
                 'sopStatuses'     => OwnerFigures::SOP_STATUSES,
@@ -140,6 +142,15 @@ class OwnerController extends Controller
         OwnerSettings::apply();
 
         return response()->json(['ok' => true, 'controls' => OwnerSettings::controls()]);
+    }
+
+    /** A new private link for the office Staff Progress screen; the old one stops working. */
+    public function newDisplayLink(): JsonResponse
+    {
+        $token = \Illuminate\Support\Str::random(40);
+        Setting::put('staff_display_token', $token);
+
+        return response()->json(['url' => route('staff.progress', ['display' => $token])]);
     }
 
     /* ── Owner-entered figures (A1 part 2) ────────────────────────────── */

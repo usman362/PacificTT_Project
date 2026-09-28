@@ -406,6 +406,11 @@
               <input id="ownerStripeWebhook" type="password" autocomplete="new-password" placeholder="{{ $controls['stripe_webhook_secret'] ?? 'whsec_…' }}">
               <small>{{ $controls['stripe_webhook_secret'] ? 'Saved encrypted · leave blank to keep' : 'Not set' }}</small>
             </div>
+            <div class="target-field">
+              <label>Staff Progress display link</label>
+              <input id="displayLink" readonly value="{{ $displayUrl ?? '' }}" placeholder="No display link yet">
+              <small>For an office screen that nobody signs in to · <button class="edit-fig" type="button" id="newDisplayLink">{{ $displayUrl ? 'Replace link' : 'Create link' }}</button></small>
+            </div>
             <button class="save-button" type="submit">Save Owner Controls</button>
             </form>
           </article>
