@@ -107,7 +107,8 @@ class InstructorOnboardingController extends Controller
                 'phone'  => $data['phone'],
                 'status' => 'active',
             ]);
-            $instructor->daily_rate_cents ??= 120000;
+            // The rate they were offered in the invitation is the rate they signed.
+            $instructor->daily_rate_cents = $invite->daily_rate_cents ?: 120000;
             $instructor->courses ??= 'both';
             $instructor->save();
 

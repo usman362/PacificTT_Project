@@ -24,6 +24,7 @@ document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
  if(b.dataset.page==='schedule') renderSchedule();
 });
 
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function renderSchedule(){
  const dateEl=document.getElementById('schedDate');
  const date=dateEl?.value || new Date().toISOString().slice(0,10);
@@ -37,20 +38,25 @@ function renderSchedule(){
       grid.innerHTML='<div class="instructor"><b>No capacity</b><p class="note">No instructor is available on this date, so the public calendar shows zero seats.</p></div>';
     } else {
       const per=d.seats_per_instructor;
+      // Each session's students are shared among the instructors covering it:
+      // whole students, the remainder going to the first instructors. That is
+      // how the Assistant screen shows an instructor's own group.
+      const share={};
+      d.sessions.forEach(s=>{
+        const n=s.instructors.length, base=n?Math.floor(s.booked/n):0, rem=n?s.booked%n:0;
+        s.instructors.forEach((inst,i)=>{ share[s.slot+'|'+inst.id]=Math.min(per,base+(i<rem?1:0)); });
+      });
       const slotOf={}; d.sessions.forEach(s=>slotOf[s.slot]=s);
-      // A card per instructor on the roster. The seats an instructor adds are
-      // their own; the booked/open figures belong to the session as a whole,
-      // which is why they are labelled as the session's and not repeated as if
-      // each instructor had a private pool of that size.
       grid.innerHTML=d.roster.map(i=>{
-        const head=`<div class="instructor"><div class="insthead"><b>${i.name}</b>`+
+        const head=`<div class="instructor"><div class="insthead"><b>${esc(i.name)}</b>`+
           `<span class="pill ${i.available?'paid':'missing'}">${i.available?'AVAILABLE':'UNAVAILABLE'}</span></div>`;
         if(!i.available) return head+`<p class="note">Not scheduled on this date — adds no seats.</p></div>`;
         return head+i.slots.map(name=>{
-          const s=slotOf[name];
-          return `<div class="session"><div class="sessiontop"><b>${s.slot}</b>`+
-            `<span>+${per} seats · session ${s.booked}/${s.capacity} · <b>${s.available} open</b></span></div>`+
-            `<div class="bar"><div class="fill" style="width:${s.capacity?Math.min(100,s.booked/s.capacity*100):0}%"></div></div></div>`;
+          const s=slotOf[name], b=share[name+'|'+i.id]||0, avail=Math.max(0,per-b);
+          const program=(s.tiers&&s.tiers.length)?s.tiers.join(' / '):'No students booked';
+          return `<div class="session"><div class="sessiontop"><b>${esc(s.slot)}</b><span><b>${b}</b> students · ${avail} open</span></div>`+
+            `<div class="note" style="margin-top:4px">${esc(program)}</div>`+
+            `<div class="bar"><div class="fill" style="width:${Math.min(100,b/per*100)}%"></div></div></div>`;
         }).join('')+'</div>';
       }).join('');
     }
@@ -112,14 +118,17 @@ function buildAvailabilityEditor(data){
 }
 function renderInstructors(){
  const body=document.getElementById('instructorRows'); if(!body)return;
+ const per=window.PTT?.seatsPerInstructor||8, slots=(window.PTT?.sessionSlots||[]).length||3;
+ // An instructor adds seats only when active AND available on at least one day.
+ const adds=i=>i.status==='Active'&&weekDays.some(d=>i.avail[d]?.on);
  body.innerHTML=instructors.map(i=>{
-  const days=weekDays.filter(d=>i.avail[d]?.on).length;
-  return `<tr><td><b>${i.name}</b><div class="note">${i.course}</div></td><td><span class="pill ${i.status==='Active'?'paid':'missing'}">${i.status.toUpperCase()}</span></td><td>$${Number(i.rate).toLocaleString()}/day</td><td>${days} days/week<br><span class="note">${days?i.avail[weekDays.find(d=>i.avail[d]?.on)].start+'–'+i.avail[weekDays.find(d=>i.avail[d]?.on)].end:'Unavailable'}</span></td><td>${i.status==='Active'?24:0} seats/day max</td><td><div class="inst-actions"><button class="btn light" onclick="editInstructor(${i.id})">Edit</button><button class="btn danger" onclick="deleteInstructor(${i.id})">Delete</button></div></td></tr>`;
+  const days=weekDays.filter(d=>i.avail[d]?.on).length, first=weekDays.find(d=>i.avail[d]?.on);
+  return `<tr><td><b>${esc(i.name)}</b><div class="note">${esc(i.course)}</div></td><td><span class="pill ${i.status==='Active'?'paid':'missing'}">${esc(i.status.toUpperCase())}</span></td><td>$${Number(i.rate).toLocaleString()}/day</td><td>${days} days/week<br><span class="note">${days?esc(i.avail[first].start+'–'+i.avail[first].end):'Unavailable'}</span></td><td>${adds(i)?per*slots:0} seats/day max</td><td><div class="inst-actions"><button class="btn light" onclick="editInstructor(${Number(i.id)})">Edit</button><button class="btn danger" onclick="deleteInstructor(${Number(i.id)})">Delete</button></div></td></tr>`;
  }).join('');
- const active=instructors.filter(i=>i.status==='Active').length;
+ const active=instructors.filter(adds).length;
  document.getElementById('activeInstructorCount').textContent=active;
- document.getElementById('instSeatCapacity').textContent=active*8;
- document.getElementById('instDayCapacity').textContent=active*8*3;
+ document.getElementById('instSeatCapacity').textContent=active*per;
+ document.getElementById('instDayCapacity').textContent=active*per*slots;
 }
 function newInstructor(){
  document.getElementById('instId').value='';document.getElementById('instName').value='';document.getElementById('instEmail').value='';document.getElementById('instPhone').value='';document.getElementById('instRate').value=1200;document.getElementById('instStatus').value='Active';document.getElementById('instCourse').value='Core + Advanced';document.getElementById('instFormTitle').textContent='Add Instructor';buildAvailabilityEditor();
@@ -131,7 +140,7 @@ function editInstructor(id){
 function saveInstructor(){
  const name=document.getElementById('instName').value.trim();if(!name){alert('Instructor name is required.');return}
  const avail={};weekDays.forEach(d=>avail[d]={on:document.getElementById('on_'+d).checked,start:document.getElementById('start_'+d).value,end:document.getElementById('end_'+d).value});
- const obj={id:+document.getElementById('instId').value||Date.now(),name,email:document.getElementById('instEmail').value,phone:document.getElementById('instPhone').value,rate:+document.getElementById('instRate').value,status:document.getElementById('instStatus').value,course:document.getElementById('instCourse').value,avail};
+ const obj={id:+document.getElementById('instId').value||null,name,email:document.getElementById('instEmail').value,phone:document.getElementById('instPhone').value,rate:+document.getElementById('instRate').value,status:document.getElementById('instStatus').value,course:document.getElementById('instCourse').value,avail};
  pttPost(window.PTT.routes.saveInstructor, obj)
    .then(res => { obj.id = res.id;
      const idx = instructors.findIndex(x => x.id === obj.id);
@@ -226,10 +235,10 @@ function verifyZelle(id){
 }
 
 let leads = (window.PTT?.leads || []).map(l => ({...l}));
-function statusPill(s){let c=s==='Paid'?'paid':s==='New'?'due':s==='Lost'?'missing':'';return `<span class="pill ${c}">${s.toUpperCase()}</span>`}
+function statusPill(s){let c=s==='Paid'?'paid':s==='New'?'due':s==='Lost'?'missing':'';return `<span class="pill ${c}">${esc(String(s).toUpperCase())}</span>`}
 function renderLeads(){
  const b=document.getElementById('leadRows');if(!b)return;
- b.innerHTML=leads.map(l=>`<tr><td><b>${l.name}</b><div class="note">LD-${String(l.id).padStart(6,'0')}</div></td><td>${l.phone}<div class="note">${l.email}</div></td><td>${l.program}</td><td>${l.date||'Flexible'}<div class="note">${l.session}</div></td><td>${l.source}</td><td>${statusPill(l.status)}</td><td>${l.follow}</td><td><button class="btn light" onclick="editLead(${l.id})">Open</button></td></tr>`).join('');
+ b.innerHTML=leads.map(l=>`<tr><td><b>${esc(l.name)}</b><div class="note">LD-${String(l.id).padStart(6,'0')}</div></td><td>${esc(l.phone)}<div class="note">${esc(l.email)}</div></td><td>${esc(l.program)}</td><td>${esc(l.date||'Flexible')}<div class="note">${esc(l.session)}</div></td><td>${esc(l.source)}</td><td>${statusPill(l.status)}</td><td>${esc(l.follow)}</td><td><button class="btn light" onclick="editLead(${Number(l.id)})">Open</button></td></tr>`).join('');
  filterLeadRows();
 }
 function newLead(){
@@ -242,7 +251,8 @@ function editLead(id){
 }
 function saveLead(){
  const name=leadName.value.trim(),phone=leadPhone.value.trim();if(!name||!phone){alert('Name and phone are required.');return}
- const id=+leadId.value||Date.now();
+ // A new lead has no id yet; the server assigns one.
+ const id=+leadId.value||null;
  const l={id,name,phone,email:leadEmail.value,program:leadProgram.value,date:leadDate.value,session:leadSession.value,source:leadSource.value,status:leadStatus.value,follow:leadFollow.value||'Not scheduled',electrical:leadElectrical.value,plc:leadPLC.value,notes:leadNotes.value};
  pttPost(window.PTT.routes.saveLead, l)
    .then(res => { l.id = res.id;
@@ -253,7 +263,16 @@ function saveLead(){
    .catch(e => alert(e.message));
 }
 function markContacted(){leadStatus.value='Contacted';saveLead()}
-function startEnrollmentFromLead(){if(!leadName.value.trim()){alert('Open or create a lead first.');return}leadStatus.value='Enrollment Started';saveLead();alert('Mockup: lead converted to enrollment start. Production build will carry the student details into a new enrollment record.')}
+function startEnrollmentFromLead(){
+ const l=leads.find(x=>x.id===+leadId.value);
+ if(!l){alert('Open or create a lead first.');return}
+ // Carry the lead's details into a new enrollment; the lead is marked
+ // "Enrollment Started" only once that enrollment actually exists.
+ newEnrollment({
+   name:l.name, phone:l.phone, email:l.email, electrical:l.electrical, plc:l.plc,
+   program_id:l.program_id||'', session:l.session==='Flexible'?'':l.session, date:l.date||''
+ }, () => pttPost(window.PTT.routes.saveLead, {...l, status:'Enrollment Started'}));
+}
 function filterLeadRows(){
  const q=(document.getElementById('leadSearch')?.value||'').toLowerCase(),s=document.getElementById('leadStatusFilter')?.value||'';
  document.querySelectorAll('#leadRows tr').forEach(r=>{const text=r.innerText.toLowerCase();r.style.display=(text.includes(q)&&(!s||text.includes(s.toLowerCase())))?'':'none'});

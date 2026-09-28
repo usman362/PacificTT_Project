@@ -23,7 +23,8 @@ class AdminAuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        // A deactivated account keeps its history but can no longer sign in.
+        if (! Auth::attempt($credentials + ['is_active' => true], $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => 'Those credentials do not match our records.',
             ]);

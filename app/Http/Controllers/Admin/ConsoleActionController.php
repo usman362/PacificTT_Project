@@ -96,7 +96,7 @@ class ConsoleActionController extends Controller
                 'email'                 => $data['email'] ?? null,
                 'electrical_experience' => $data['electrical'] ?? null,
                 'plc_experience'        => $data['plc'] ?? null,
-                'program_id'            => \App\Models\Program::where('name', $data['program'] ?? '')->value('id'),
+                'program_id'            => $this->programIdFromLabel($data['program'] ?? null),
                 'preferred_date'        => ($data['date'] ?? null) ?: null,
                 'preferred_session'     => $data['session'] ?? null,
                 'source'                => $data['source'] ?? 'Other',
@@ -174,6 +174,7 @@ class ConsoleActionController extends Controller
                 'capacity'    => $cap,
                 'booked'      => $booked,
                 'available'   => max(0, $cap - $booked),
+                'tiers'       => $seats->tiersForSlot($date, $slot),
             ];
         })->values();
 
@@ -211,8 +212,9 @@ class ConsoleActionController extends Controller
     {
         $data = $request->validate([
             'email' => ['required', 'email', 'max:180'],
-            'name'  => ['nullable', 'string', 'max:120'],
-        ]);
+            'name'  => ['required', 'string', 'max:120'],
+            'rate'  => ['nullable', 'numeric', 'min:0', 'max:100000'],
+        ], [], ['rate' => 'daily rate']);
 
         $existing = \App\Models\InstructorInvitation::where('email', $data['email'])
             ->whereNull('consumed_at')
@@ -220,15 +222,43 @@ class ConsoleActionController extends Controller
             ->first();
 
         $invite = $existing ?: \App\Models\InstructorInvitation::issue(
-            $data['email'], $data['name'] ?? null, $request->user()->id
+            $data['email'], $data['name'], $request->user()->id,
+            isset($data['rate']) ? (int) round($data['rate'] * 100) : null
         );
+
+        try {
+            \Illuminate\Support\Facades\Mail::to($invite->email)->send(new \App\Mail\InstructorInvitationMail($invite));
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'message' => 'The invitation was created but the email could not be sent. Check the mail settings and try again.',
+            ], 502);
+        }
 
         return response()->json([
             'ok'      => true,
-            'link'    => route('instructor.onboarding.show', ['token' => $invite->token]),
             'reused'  => (bool) $existing,
             'expires' => $invite->expires_at->format('M j, Y'),
+            'email'   => $invite->email,
         ]);
+    }
+
+    /**
+     * The lead form offers "Core — $1,495" / "Advanced — $2,500" / "Undecided".
+     * Match the tier word to its programme; fall back to a full programme name.
+     */
+    private function programIdFromLabel(?string $label): ?int
+    {
+        if (! $label || $label === 'Undecided') {
+            return null;
+        }
+
+        $tier = trim(explode('—', $label)[0]);
+        $slug = array_flip(config('ptt.program_tiers', []))[$tier] ?? null;
+
+        return \App\Models\Program::where('slug', $slug)->value('id')
+            ?? \App\Models\Program::where('name', $label)->value('id');
     }
 
     private function parseFollowUp(?string $value): ?Carbon

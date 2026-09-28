@@ -261,7 +261,11 @@ class ConsoleController extends Controller
             })->values(),
             'leads' => Lead::with('program')->latest()->get()->map(fn ($l) => [
                 'id' => $l->id, 'name' => $l->name, 'phone' => $l->phone, 'email' => $l->email,
-                'program' => $l->program?->name ?? 'Undecided',
+                // Same wording as the lead form's options, e.g. "Core — $1,495".
+                'program' => $l->program
+                    ? (config('ptt.program_tiers.'.$l->program->slug) ?? $l->program->name).' — '.$l->program->price_label
+                    : 'Undecided',
+                'program_id' => $l->program_id,
                 'date' => $l->preferred_date?->toDateString() ?? '',
                 'session' => $l->preferred_session ?? 'Flexible',
                 'source' => $l->source, 'status' => $l->statusLabel(),
@@ -296,6 +300,11 @@ class ConsoleController extends Controller
                 'settingsSave'     => route('admin.settings.save'),
                 'export'           => route('admin.export'),
                 'inviteInstructor' => route('admin.instructors.invite'),
+                'live'             => route('admin.live'),
+                'liveMetrics'      => route('admin.live.metrics'),
+                'liveUpdates'      => route('admin.live.updates'),
+                'liveMissions'     => route('admin.live.missions'),
+                'liveMission'      => route('admin.live.missions.update', ['mission' => '__ID__']),
             ],
         ];
     }

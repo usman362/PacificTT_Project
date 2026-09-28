@@ -33,7 +33,7 @@
    <div class="two"><div class="field"><label>Legal Name *</label><input id="name" placeholder="Full legal name" value="{{ $invite?->name }}"></div><div class="field"><label>Phone *</label><input id="phone" placeholder="(000) 000-0000"></div></div>
    <div class="field"><label>Email *</label><input id="email" type="email" placeholder="Email address" value="{{ $invite?->email }}" readonly></div>
    <div class="two"><div class="field"><label>Address *</label><input id="address" placeholder="Street address"></div><div class="field"><label>City / State / ZIP *</label><input id="city" placeholder="City, CA 00000"></div></div>
-   <div class="two"><div class="field"><label>Authorized Courses</label><select><option>Core + Advanced</option><option>Core Only</option><option>Advanced Only</option></select></div><div class="field"><label>Daily Rate</label><input value="$1,200 / scheduled instructional day" readonly></div></div>
+   <div class="two"><div class="field"><label>Authorized Courses</label><select><option>Core + Advanced</option><option>Core Only</option><option>Advanced Only</option></select></div><div class="field"><label>Daily Rate</label><input value="{{ '$'.number_format(($invite?->daily_rate_cents ?? 120000) / 100, 0) }} / scheduled instructional day" readonly></div></div>
    <button class="btn gold" onclick="pttProfileNext(this)">CONTINUE</button>
   </section>
 
@@ -44,7 +44,7 @@
     <p>This Agreement is entered into between PACIFIC TRADE TECH™ and the undersigned Instructor (“Contractor”) for authorized vocational training services.</p>
     <h3>1. SERVICES</h3><p>Contractor may provide authorized Core and/or Advanced industrial electrical, PLC, automation and HMI instruction and shall follow approved curriculum and safety requirements.</p>
     <h3>2. SESSIONS AND CAPACITY</h3><p>A scheduled instructional day may include up to three four-hour sessions. Maximum classroom capacity is eight students per assigned instructor per session unless a lower limit is established for safety or operational reasons.</p>
-    <h3>3. COMPENSATION</h3><p>Compensation is $1,200 per scheduled instructional day unless otherwise approved in writing. No minimum number of training days is guaranteed.</p>
+    <h3>3. COMPENSATION</h3><p>Compensation is {{ '$'.number_format(($invite?->daily_rate_cents ?? 120000) / 100, 0) }} per scheduled instructional day unless otherwise approved in writing. No minimum number of training days is guaranteed.</p>
     <h3>4. W-9 / TAX REPORTING</h3><p>Contractor shall provide a completed IRS Form W-9 before first payment and is responsible for applicable tax obligations, subject to law.</p>
     <h3>5. CLASSIFICATION</h3><p>The parties intend an independent contractor relationship only to the extent permitted by applicable law. This Agreement does not override California or federal worker-classification requirements.</p>
     <h3>6. AVAILABILITY</h3><p>Contractor shall provide accurate availability. Training assignments depend on enrollment, qualifications, facility availability and operational needs.</p>
@@ -72,7 +72,7 @@
   <section class="step" id="s4">
    <h2>Review & Submit</h2>
    <div class="status"><b>✓ Email Verified</b><br>✓ Instructor information completed<br>✓ Contractor agreement signed<br>✓ W-9 completed and electronically signed</div>
-   <div class="card" style="box-shadow:none;margin-top:14px"><div class="note">Instructor</div><b id="reviewName">—</b><br><br><div class="note">Agreement</div><b>PTT-ICA-2026.1</b><br><br><div class="note">Compensation</div><b>$1,200 / scheduled instructional day</b></div>
+   <div class="card" style="box-shadow:none;margin-top:14px"><div class="note">Instructor</div><b id="reviewName">—</b><br><br><div class="note">Agreement</div><b>PTT-ICA-2026.1</b><br><br><div class="note">Compensation</div><b>{{ '$'.number_format(($invite?->daily_rate_cents ?? 120000) / 100, 0) }} / scheduled instructional day</b></div>
    <div class="check"><input id="finalAck" type="checkbox"><span>I confirm the information submitted is accurate and understand that submission permanently closes this single-use onboarding invitation.</span></div>
    <button class="btn gold" onclick="pttSubmit(this)">SIGN & SUBMIT ONBOARDING</button>
   </section>

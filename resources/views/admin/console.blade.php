@@ -3,35 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PACIFIC TRADE TECH™ — Assistant Command</title>
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>PACIFIC TRADE TECH&trade; — Admin</title>
 <link rel="stylesheet" href="{{ \App\Support\Asset::url('css/admin.css') }}">
 </head>
 <body>
 <div class="app">
 <aside>
   <div class="brand">PACIFIC <span>TRADE TECH™</span></div>
-  <div class="sub">ADMINISTRATION CONSOLE</div>
+  <div class="sub">ASSISTANT OPERATIONS COMMAND</div>
   <nav id="nav">
-    <button class="active" data-page="dashboard">Dashboard</button>
+    <div class="navgroup">COMMAND</div>
+    <button class="active" data-page="dashboard">Overview</button>
+    <button data-page="command">Realtime Command</button>
+    <div class="navgroup">ENROLLMENT</div>
     <button data-page="enrollments">Enrollments</button>
-    <button data-page="schedule">Schedule</button>
     <button data-page="students">Students</button>
-    <button data-page="leads">Leads</button>
-    <button data-page="payments">Payments</button>
+    <button data-page="leads">Leads CRM</button>
+    <div class="navgroup">TRAINING</div>
+    <button data-page="schedule">Schedule</button>
+    <button data-page="instructors">Instructors & Onboarding</button>
+    <div class="navgroup">COMPLIANCE</div>
     <button data-page="waivers">Waivers</button>
     <button data-page="certificates">Certificates</button>
-    
-    <button data-page="instructors">Instructors</button>
+    <div class="navgroup">FINANCE</div>
+    <button data-page="payments">Payments</button>
     <button data-page="reports">Reports</button>
-    <button data-page="settings">Settings</button>
   </nav>
   <div class="foot">PacificTT.com<br>© 2026 PACIFIC TRADE TECH™</div>
 </aside>
 
 <main>
 <div class="top">
- <div><h1 id="pageTitle">Dashboard</h1><p>Operations, enrollment, payments and training management.</p></div>
+ <div><h1 id="pageTitle">Assistant Overview</h1><p>Daily operations, enrollment, training, compliance, finance, and realtime company command.</p></div>
  <div class="actions"><button class="btn light" type="button" onclick="exportEnrollments()">Export</button><button class="btn gold" type="button" onclick="newEnrollment()">+ New Enrollment</button></div>
 </div>
 
@@ -44,12 +48,35 @@
   <div class="card"><div class="k">New Leads</div><div class="v">{{ $metrics['new_leads'] }}</div><div class="delta">{{ $metrics['need_contact'] }} need contact</div></div>
  </div>
  <div class="grid2">
-  <div class="panel today"><h2>Today — Training Operations</h2><div class="todaygrid">
-   <div><div class="k">Available Capacity</div><div class="v" id="todayCapacity">{{ $todayOps['capacity'] }}</div></div>
-   <div><div class="k">Seats Remaining</div><div class="v" id="todayRemaining">{{ $todayOps['remaining'] }}</div></div>
-   <div><div class="k">Core</div><div class="v">{{ $todayOps['core'] }}</div></div>
-   <div><div class="k">Advanced</div><div class="v">{{ $todayOps['advanced'] }}</div></div>
-  </div></div>
+  <div class="panel today">
+   <h2>Today — Training Operations</h2>
+   <div class="todaygrid">
+    <div class="todaymetric">
+     <div class="k">Available Capacity</div>
+     <div class="metric-accent"></div>
+     <div class="v" id="todayCapacity">{{ $todayOps['capacity'] }}</div>
+     <div class="metric-mark">{{ $todayOps['capacity'] }}</div>
+    </div>
+    <div class="todaymetric">
+     <div class="k">Seats Remaining</div>
+     <div class="metric-accent"></div>
+     <div class="v" id="todayRemaining">{{ $todayOps['remaining'] }}</div>
+     <div class="metric-mark">{{ $todayOps['remaining'] }}</div>
+    </div>
+    <div class="todaymetric">
+     <div class="k">Core</div>
+     <div class="metric-accent"></div>
+     <div class="v">{{ $todayOps['core'] }}</div>
+     <div class="metric-mark">C</div>
+    </div>
+    <div class="todaymetric">
+     <div class="k">Advanced</div>
+     <div class="metric-accent"></div>
+     <div class="v">{{ $todayOps['advanced'] }}</div>
+     <div class="metric-mark">A</div>
+    </div>
+   </div>
+  </div>
   <div class="panel"><h2>Action Required</h2>
    @if($actions['waivers_to_review'])<div class="alert bad">{{ $actions['waivers_to_review'] }} student waiver{{ $actions['waivers_to_review'] == 1 ? '' : 's' }} require{{ $actions['waivers_to_review'] == 1 ? 's' : '' }} review</div>@endif
    @if($actions['balances_today'])<div class="alert">{{ $actions['balances_today'] }} onsite balance{{ $actions['balances_today'] == 1 ? '' : 's' }} due today</div>@endif
@@ -67,6 +94,11 @@
    @endforeach
   </div><p class="note"><b>{{ $funnel['conversion'] }}%</b> lead-to-paid conversion.</p></div>
  </div>
+
+  <div class="panel assistant-scope" style="margin-top:14px">
+    <div><b>Assistant operational access</b><span>All day-to-day Admin functions are available here. Owner Settings and merchant/configuration controls are intentionally excluded.</span></div>
+    <button class="btn gold" data-jump="command">Open Realtime Command</button>
+  </div>
 </section>
 
 <section class="page" id="enrollments"><div class="panel"><h2>Enrollment Management</h2><div class="toolbar">
@@ -330,7 +362,7 @@
 <section class="page" id="instructors">
  <div class="inst-toolbar">
   <div><h2 style="margin:0">Instructor Management</h2><div class="note">Add, edit or remove instructors. Availability directly controls public calendar seat capacity.</div></div>
-  <div class="inst-actions"><button class="btn light" type="button" onclick="inviteInstructor()">Send onboarding invite</button><button class="btn gold" type="button" onclick="newInstructor()">+ Add Instructor</button></div>
+  <div class="inst-actions"><button class="btn" onclick="document.getElementById('inviteInstructor').scrollIntoView({behavior:'smooth'})">Send Onboarding</button><button class="btn gold" onclick="newInstructor()">+ Add Instructor</button></div>
  </div>
  <div class="logic"><strong>CAPACITY RULE:</strong> Each available instructor adds <b>8 seats per session</b>. If only one instructor is available for a session, the public calendar shows 8 total seats. Two available instructors show 16, three show 24, and so on. Unavailable instructors add zero capacity.</div>
  <div class="panel">
@@ -362,89 +394,196 @@
    <p class="note">Actual calendar capacity is calculated per date and session from the instructors whose availability overlaps that session.</p>
   </div>
  </div>
+
+ 
+ <div class="panel" id="inviteInstructor" style="margin-top:14px">
+  <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+   <div><h2 style="margin:0">Instructor Onboarding Invitation</h2><div class="note">Instructor completes onboarding through a private, single-use email link protected by a one-time 6-digit verification code.</div></div>
+  </div>
+  <div class="invitebox">
+   <div class="invitegrid">
+    <div><label>Instructor Name *</label><input id="inviteName" placeholder="Instructor full name"></div>
+    <div><label>Instructor Email *</label><input id="inviteEmail" type="email" placeholder="instructor@email.com"></div>
+   </div>
+   <div class="invitegrid">
+    <div><label>Daily Rate</label><input id="inviteRate" value="$1,200 / day" inputmode="decimal"></div>
+    <div><label>Agreement Version</label><input value="PTT-ICA-2026.1" readonly></div>
+   </div>
+   <div class="lead-actions">
+    <button class="btn gold" onclick="sendInvite()">SEND SECURE ONBOARDING EMAIL</button>
+    <button class="btn light" onclick="resetInvite()">Reset</button>
+   </div>
+   <div class="invite-status">
+    <div><div class="k">Invitation</div><b id="inviteState">NOT SENT</b></div>
+    <div><div class="k">6-Digit Code</div><b id="codeState">NOT GENERATED</b></div>
+    <div><div class="k">Link</div><b id="linkState">INACTIVE</b></div>
+    <div><div class="k">Onboarding</div><b id="completeState">PENDING</b></div>
+   </div>
+   <p class="note"><b>Production behavior:</b> the code is generated server-side, stored as a secure hash, sent only to the instructor's email, and accepted once. After successful submission, the invitation token is consumed and the onboarding URL permanently returns an expired/completed page.</p>
+  </div>
+ </div>
+
+<div class="onboard-grid" id="contractOnboarding" style="display:none">
+  <div class="panel">
+   <h2>Independent Contractor Instructor Agreement</h2>
+   <div class="note">Required onboarding document. This mockup should be reviewed by California employment counsel before production use.</div>
+   <div class="docscroll">
+    <h2>PACIFIC TRADE TECH™<br>INDEPENDENT CONTRACTOR INSTRUCTOR AGREEMENT</h2>
+    <p>This Independent Contractor Instructor Agreement (“Agreement”) is entered into between PACIFIC TRADE TECH™ and the undersigned Instructor (“Contractor”) for authorized vocational training services.</p>
+    <h3>1. SERVICES</h3><p>Contractor may provide instruction in authorized PACIFIC TRADE TECH™ Core and/or Advanced industrial electrical, PLC, automation and HMI courses. Contractor shall provide instruction professionally, follow the approved curriculum and comply with applicable safety requirements.</p>
+    <h3>2. SESSIONS AND CAPACITY</h3><p>A scheduled instructional day may include up to three four-hour sessions. Maximum classroom capacity is eight students per assigned instructor per session unless PACIFIC TRADE TECH™ establishes a lower limit for safety or operational reasons.</p>
+    <h3>3. COMPENSATION</h3><p>Contractor compensation is $1,200 per scheduled instructional day unless a different rate is approved in writing. No minimum number of training days is guaranteed. Payment is subject to completion of required onboarding and tax documentation.</p>
+    <h3>4. W-9 / TAX REPORTING</h3><p>Contractor shall provide a completed IRS Form W-9 before first payment. Contractor is responsible for taxes and reporting obligations applicable to compensation received, subject to applicable law.</p>
+    <h3>5. CLASSIFICATION</h3><p>The parties intend the relationship described by this Agreement to be an independent contractor relationship only to the extent permitted by applicable law. Nothing in this Agreement overrides worker-classification requirements imposed by California or federal law.</p>
+    <h3>6. AVAILABILITY</h3><p>Contractor shall provide accurate availability. PACIFIC TRADE TECH™ may offer training assignments based on student enrollment, course qualifications, facility availability and operational needs. Acceptance of a training assignment creates an obligation to appear and perform the scheduled instruction unless excused.</p>
+    <h3>7. SAFETY</h3><p>Contractor shall enforce PACIFIC TRADE TECH™ safety procedures, required PPE, equipment restrictions and applicable lockout/tagout practices. Contractor shall immediately stop unsafe activities and report injuries, near misses, equipment damage and hazardous conditions.</p>
+    <h3>8. STUDENT RECORDS AND CONFIDENTIALITY</h3><p>Student identities, contact information, payment information, waivers, attendance records and training records are confidential and may be used only for authorized PACIFIC TRADE TECH™ purposes.</p>
+    <h3>9. CURRICULUM AND INTELLECTUAL PROPERTY</h3><p>PACIFIC TRADE TECH™ course materials, curriculum, diagrams, exercises, presentations, branding and proprietary training resources remain the property of their respective owner(s). Contractor receives only the limited permission necessary to perform authorized training and may not commercially reproduce, sell or distribute proprietary materials without written authorization.</p>
+    <h3>10. STUDENT RELATIONSHIPS</h3><p>Contractor shall not misrepresent PACIFIC TRADE TECH™ programs or divert enrolled students, payments or PACIFIC TRADE TECH™ business opportunities for personal benefit. Any restrictive covenant shall apply only to the extent enforceable under California law.</p>
+    <h3>11. CERTIFICATES</h3><p>Contractor may verify attendance and successful course completion when authorized. Contractor may not independently create, issue, alter or represent an unofficial document as an official PACIFIC TRADE TECH™ Certificate of Completion. Official certificates are issued through PACIFIC TRADE TECH™ administration.</p>
+    <h3>12. EQUIPMENT AND PROPERTY</h3><p>Contractor shall use training equipment only for authorized purposes and promptly report damage or malfunction. Responsibility for losses or damage shall be determined under applicable law and the circumstances involved.</p>
+    <h3>13. INSURANCE / QUALIFICATIONS</h3><p>PACIFIC TRADE TECH™ may require evidence of relevant qualifications, experience, licenses or insurance when appropriate to an assignment or required by law.</p>
+    <h3>14. CANCELLATION / FAILURE TO APPEAR</h3><p>Contractor shall promptly notify administration when unable to perform an accepted assignment. Repeated late cancellations or failures to appear may result in removal from future scheduling or termination of this Agreement.</p>
+    <h3>15. TERMINATION</h3><p>Either party may terminate this Agreement subject to any written notice requirement established by PACIFIC TRADE TECH™ and applicable law. Confidentiality, intellectual-property and record-protection obligations that by their nature survive termination shall continue as legally enforceable.</p>
+    <h3>16. NO AUTHORITY TO BIND</h3><p>Contractor may not enter contracts, incur obligations, promise refunds, alter tuition, issue credentials or otherwise bind PACIFIC TRADE TECH™ unless specifically authorized in writing.</p>
+    <h3>17. GOVERNING LAW</h3><p>This Agreement is governed by applicable California law. If any provision is unenforceable, the remaining lawful provisions shall remain effective to the extent permitted.</p>
+    <h3>18. ENTIRE AGREEMENT / ELECTRONIC SIGNATURES</h3><p>This Agreement and incorporated written policies constitute the parties’ agreement concerning the covered services. Electronic signatures and electronic records may be used to the extent permitted by law.</p>
+   </div>
+  </div>
+
+  <div class="panel onboard-form">
+   <h2>Instructor Onboarding</h2>
+   <div class="logic"><strong>ACTIVATION RULE:</strong> Instructor remains <b>PENDING / NOT SCHEDULABLE</b> until the contractor agreement and PACIFIC TRADE TECH™ acceptance are complete.</div>
+   <label>Instructor *</label><select id="onboardInstructor"><option>Instructor A</option><option>Instructor B</option><option>New Instructor</option></select>
+   <label>Agreement Version</label><input value="PTT-ICA-2026.1" readonly>
+   <div class="checkline"><input type="checkbox" id="contractAgree" style="width:auto"><span>I acknowledge that I have read and agree to the Independent Contractor Instructor Agreement.</span></div>
+   <label>Instructor Signature *</label><div class="onboard-sign" id="contractSign" onclick="signContract()">Click to sign</div><input type="hidden" id="contractSigned">
+   <label>Signed Date / Time</label><input id="contractStamp" readonly placeholder="Automatically stamped">
+
+   <div class="docbox">
+    <h2 style="margin-top:0">PACIFIC TRADE TECH™ ACCEPTANCE</h2>
+    <label>Representative Name *</label><input id="contractRep" placeholder="Authorized staff full name">
+    <label>Representative Signature *</label><div class="onboard-sign" id="contractRepSign" onclick="signContractRep()">Click to apply staff signature</div><input type="hidden" id="contractRepSigned">
+    <label>Date *</label><input id="contractRepDate" type="date">
+   </div>
+
+   <button class="btn gold" style="width:100%" onclick="activateInstructor()">COMPLETE ONBOARDING / ACTIVATE</button>
+   <div class="verifybox" id="onboardComplete" style="display:none"><b>✓ INSTRUCTOR ONBOARDING COMPLETE</b><br>Agreement executed and staff acceptance completed. Instructor may now be made schedulable.</div>
+  </div>
+ </div>
+
 </section>
+
+<section class="page" id="command">
+  <div class="command-hero">
+    <div><div class="eyebrow">REALTIME OPERATIONS</div><h2>Assistant Command Center</h2><p>Publish company metrics, assign Mission Focus work, and push staff updates from one controlled workspace.</p></div>
+    <div class="live-state"><i></i><span>LIVE DATA CHANNEL</span><b id="cmdRevision">Revision 1</b></div>
+  </div>
+
+  <div class="command-kpis">
+    <div class="cmd-kpi"><span>Cash Today</span><b id="cmdCash">$0</b><small>Collected funds</small></div>
+    <div class="cmd-kpi"><span>Enrollments</span><b id="cmdEnroll">0</b><small>Monthly confirmed</small></div>
+    <div class="cmd-kpi"><span>Utilization</span><b id="cmdUtil">0%</b><small>Seat occupancy</small></div>
+    <div class="cmd-kpi"><span>Attendance</span><b id="cmdAttend">0%</b><small>Active sessions</small></div>
+    <div class="cmd-kpi"><span>Mission Focus</span><b id="cmdFocus">0%</b><small id="cmdFocusNote">No decided missions</small></div>
+  </div>
+
+  <div class="command-grid">
+    <div class="panel compact-panel">
+      <div class="section-head"><div><h2>Business Metrics</h2><p class="note">Publish verified operating numbers to the live staff display.</p></div><span class="pill paid">REALTIME</span></div>
+      <div class="metric-grid">
+        <label>Cash collected today<input id="cmdCashInput" type="number" min="0" step=".01"></label>
+        <label>Monthly enrollments<input id="cmdEnrollInput" type="number" min="0"></label>
+        <label>Seat utilization %<input id="cmdUtilInput" type="number" min="0" max="100"></label>
+        <label>Attendance %<input id="cmdAttendInput" type="number" min="0" max="100"></label>
+        <label>Completion forecast %<input id="cmdCompletionInput" type="number" min="0" max="100"></label>
+      </div>
+      <button class="btn gold" id="cmdPublishMetrics">Publish Metrics</button>
+    </div>
+
+    <div class="panel compact-panel">
+      <div class="section-head"><div><h2>Push Realtime Update</h2><p class="note">Send a short company alert or operating update.</p></div><span class="pill">LIVE FEED</span></div>
+      <textarea id="cmdUpdateMessage" class="cmd-textarea" placeholder="What does the team need to know now?"></textarea>
+      <div class="cmd-row"><select id="cmdUpdateType"><option value="priority">Priority</option><option value="alert">Alert</option><option value="success">Success</option><option value="general">General</option></select><select id="cmdUpdateDepartment"><option>Company-wide</option><option>Enrollment</option><option>Training</option><option>Operations</option><option>Finance</option><option>Leadership</option></select></div>
+      <button class="btn gold" id="cmdPushUpdate">Push Update</button>
+    </div>
+  </div>
+
+  <div class="command-grid">
+    <div class="panel compact-panel">
+      <div class="section-head"><div><h2>Mission Focus</h2><p class="note">Assign work with a deadline. Expired unfinished work becomes Noise.</p></div><span class="pill" id="cmdMissionCount">0 MISSIONS</span></div>
+      <div class="mission-form">
+        <input id="cmdTaskTitle" placeholder="Mission Focus task">
+        <select id="cmdTaskOwner" aria-label="Assignment owner">
+          <option value="">Select registered owner</option>
+        </select>
+        <select id="cmdTaskDepartment"><option>Operations</option><option>Enrollment</option><option>Training</option><option>Finance</option><option>Growth</option></select>
+        <input id="cmdTaskDeadline" type="datetime-local">
+        <button class="btn gold" id="cmdAssignTask">Assign</button>
+      </div>
+      <div class="owner-rule-note"><b>Owner:</b> only active registered Pacific Trade Tech users can receive new assignments.</div>
+      <div class="focusbar"><div id="cmdFocusFill"></div></div>
+      <div class="focuslabels"><b id="cmdFocusLabel">MISSION FOCUS 0%</b><span id="cmdNoiseLabel">NOISE 0%</span></div>
+      <div id="cmdTaskList" class="cmd-list"></div>
+    </div>
+
+    <div class="panel compact-panel">
+      <div class="section-head"><div><h2>Realtime Activity</h2><p class="note">Newest assistant-published company updates.</p></div><span class="pill paid" id="cmdFeedCount">0 UPDATES</span></div>
+      <div id="cmdFeed" class="cmd-feed"></div>
+    </div>
+  </div>
+
+  <div class="panel compact-panel command-tools">
+    <div class="section-head"><div><h2>Operational Workspaces</h2><p class="note">Jump directly to the work area you need without crowding this command screen.</p></div></div>
+    <div class="workspace-grid">
+      <button data-jump="leads"><b>Leads CRM</b><span>Prospects & follow-up</span></button>
+      <button data-jump="enrollments"><b>Enrollments</b><span>Student enrollment records</span></button>
+      <button data-jump="schedule"><b>Schedule</b><span>Sessions & seat capacity</span></button>
+      <button data-jump="waivers"><b>Waivers</b><span>Acceptance & review</span></button>
+      <button data-jump="certificates"><b>Certificates</b><span>Issue & verify</span></button>
+      <button data-jump="payments"><b>Payments</b><span>Transactions & Zelle</span></button>
+      <button data-jump="instructors"><b>Instructors</b><span>Availability & onboarding</span></button>
+      <button data-jump="reports"><b>Reports</b><span>Operating & financial reports</span></button>
+    </div>
+  </div>
+</section>
+
 <section class="page" id="reports"><div class="cards"><div class="card"><div class="k">Gross Tuition MTD</div><div class="v">${{ number_format($reports['gross_mtd'], 0) }}</div></div><div class="card"><div class="k">Avg Enrollment</div><div class="v">${{ number_format($reports['avg_enrollment'], 0) }}</div></div><div class="card"><div class="k">Occupancy</div><div class="v">{{ $reports['occupancy'] }}%</div></div><div class="card"><div class="k">No-Show</div><div class="v">{{ $reports['no_show'] }}</div></div></div><div class="panel" style="margin-top:14px"><h2>Financial Reporting</h2><p class="note">Today / Week / Month / Quarter / Year / Custom. Track tuition, refunds, processing, instructor payroll, advertising, materials, operating expense, IP royalty and operating profit.</p></div></section>
-<section class="page" id="settings"><div class="panel"><h2>Operating Settings</h2>
-@foreach($programs as $p)
-<div class="settingrow"><div><b>{{ $p->name }}</b><div class="note">{{ $p->short_name }}</div></div><input id="price_{{ $p->id }}" value="${{ number_format($p->price_cents / 100, 0) }}"><button class="btn light" type="button" onclick="saveSetting(this, 'program_price_{{ $p->id }}', 'price_{{ $p->id }}')">Save</button></div>
-@endforeach
-
-<div class="settingrow"><div><b>Seats per instructor / session</b><div class="note">Used by public calendar capacity engine</div></div><input id="seatSetting" type="number" min="1" value="{{ $settings['seats_per_instructor'] }}"><button class="btn light" type="button" onclick="saveSetting(this, 'seats_per_instructor', 'seatSetting'); renderSchedule()">Apply</button></div>
-<div class="settingrow"><div><b>Sessions per day</b></div><input id="setSessions" value="{{ \App\Models\Setting::get('sessions_per_day', count($settings['session_slots'])) }}"><button class="btn light" type="button" onclick="saveSetting(this, 'sessions_per_day', 'setSessions')">Save</button></div>
-<div class="settingrow"><div><b>Deposit</b></div><input id="depositPct" value="{{ $settings['deposit_percent'] }}"><button class="btn light" type="button" onclick="saveSetting(this, 'deposit_percent', 'depositPct')">Save</button></div>
-<div class="settingrow"><div><b>Operating days</b></div><input id="setDays" value="{{ \App\Models\Setting::get('operating_days', 'Monday–Saturday; Sunday Closed') }}"><button class="btn light" type="button" onclick="saveSetting(this, 'operating_days', 'setDays')">Save</button></div>
-<div class="settingrow"><div><b>Contact</b></div><input id="contactPhone" value="{{ \App\Models\Setting::get('contact_phone', '1 (800) 997-4607') }}"><button class="btn light" type="button" onclick="saveSetting(this, 'contact_phone', 'contactPhone')">Save</button></div>
-<div style="margin-top:24px;padding-top:18px;border-top:2px solid var(--line)">
-  <h2 style="margin:0 0 5px">Payment Merchant</h2>
-  <div class="note">Configure the payment processor used by student checkout. Credentials shown here are mockup fields only.</div>
-</div>
-
-<div class="settingrow">
-  <div><b>Primary Payment Merchant</b><div class="note">Processor used for online checkout</div></div>
-  <select id="merchantSelect" onchange="showMerchantFields()">
-    <option value="stripe">Stripe</option>
-    <option value="paypal">PayPal</option>
-    <option value="zelle">Zelle — In-House Verification</option>
-    <option value="other">Other</option>
-  </select>
-  <button class="btn light" type="button" onclick="saveSetting(this, 'payment_merchant', 'merchantSelect')">Save</button>
-</div>
-
-<div id="stripeFields">
-  <div class="settingrow"><div><b>Stripe Publishable Key</b></div><input type="password" value="" disabled placeholder="{{ config('services.stripe.key') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
-  <div class="settingrow"><div><b>Stripe Secret Key</b><div class="note">Server-side credential</div></div><input type="password" value="" disabled placeholder="{{ config('services.stripe.secret') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
-  <div class="settingrow"><div><b>Webhook Secret</b></div><input type="password" value="" disabled placeholder="{{ config('services.stripe.webhook_secret') ? 'configured on the server' : 'not set' }}"><span class="note">Set in the server environment</span></div>
-</div>
-
-<div id="paypalFields" style="display:none">
-  <div class="settingrow"><div><b>PayPal Client ID</b></div><input type="password" placeholder="Set in the server environment" disabled><span class="note">Server environment</span></div>
-  <div class="settingrow"><div><b>PayPal Client Secret</b><div class="note">Server-side credential</div></div><input type="password" placeholder="Set in the server environment" disabled><span class="note">Server environment</span></div>
-</div>
-
-
-<div id="zelleFields" style="display:none">
-  <div class="settingrow">
-    <div><b>Zelle Payment</b><div class="note">Primarily for walk-in payments. Payments remain pending until verified by authorized staff.</div></div>
-    <select id="zelleEnabled"><option>Enabled</option><option>Disabled</option></select>
-    <button class="btn light" type="button" onclick="saveSetting(this, 'zelle_enabled', 'zelleEnabled')">Save</button>
-  </div>
-  <div class="settingrow">
-    <div><b>Zelle Recipient</b><div class="note">Business email or phone displayed to staff/customer</div></div>
-    <input id="zelleRecipient" placeholder="Enter Zelle business email or phone">
-    <button class="btn light" type="button" onclick="saveSetting(this, 'zelle_recipient', 'zelleRecipient')">Save</button>
-  </div>
-  <div class="settingrow">
-    <div><b>Verification Requirement</b><div class="note">Enrollment is not marked paid until staff confirms receipt.</div></div>
-    <select id="zelleVerify"><option>Required — In-House Verification</option></select>
-    <button class="btn light" type="button" onclick="saveSetting(this, 'zelle_verification', 'zelleVerify')">Save</button>
-  </div>
-  <div class="settingrow">
-    <div><b>Default Use</b></div>
-    <select id="zelleUse"><option>Walk-In / In-House</option><option>Allow Online Selection</option></select>
-    <button class="btn light" type="button" onclick="saveSetting(this, 'zelle_default_use', 'zelleUse')">Save</button>
-  </div>
-</div>
-
-<div id="otherFields" style="display:none">
-  <div class="settingrow"><div><b>Merchant Name</b></div><input id="otherMerchant" placeholder="Merchant / gateway name" value="{{ \App\Models\Setting::get('other_merchant_name', '') }}"><button class="btn light" type="button" onclick="saveSetting(this, 'other_merchant_name', 'otherMerchant')">Save</button></div>
-  <div class="settingrow"><div><b>API / Merchant ID</b></div><input type="password" placeholder="Set in the server environment" disabled><span class="note">Server environment</span></div>
-  <div class="settingrow"><div><b>Secret / Token</b></div><input type="password" placeholder="Set in the server environment" disabled><span class="note">Server environment</span></div>
-</div>
-
-<div class="settingrow">
-  <div><b>Merchant Status</b><div class="note">Controls whether online payment is available at checkout</div></div>
-  <select id="merchantStatus"><option>Live / Enabled</option><option>Test Mode</option><option>Disabled</option></select>
-  <button class="btn light" type="button" onclick="saveSetting(this, 'merchant_status', 'merchantStatus')">Save</button>
-</div>
-
-<div class="settingrow">
-  <div><b>Accepted Checkout Options</b><div class="note">Full payment or 30% deposit / balance onsite</div></div>
-  <select id="checkoutOptions"><option>Full Payment + 30% Deposit</option><option>Full Payment Only</option><option>30% Deposit Only</option></select>
-  <button class="btn light" type="button" onclick="saveSetting(this, 'checkout_options', 'checkoutOptions')">Save</button>
-</div>
-
-</div></section>
 </main>
+</div>
+
+
+
+<div class="reschedule-modal" id="rescheduleModal" aria-hidden="true">
+  <div class="reschedule-dialog" role="dialog" aria-modal="true" aria-labelledby="rescheduleTitle">
+    <div class="reschedule-head">
+      <div class="eyebrow">MISSION FOCUS</div>
+      <h2 id="rescheduleTitle">Reschedule Task</h2>
+      <p>Move this mission to a new completion deadline without losing the task or its assignment.</p>
+      <button class="reschedule-close" type="button" aria-label="Close" onclick="closeRescheduleModal()">×</button>
+    </div>
+    <div class="reschedule-body">
+      <div class="reschedule-task">
+        <small>Task</small>
+        <b id="rescheduleTaskName">Mission Focus Task</b>
+      </div>
+      <div class="reschedule-meta">
+        <div class="reschedule-field">
+          <label for="rescheduleCurrent">Current Deadline</label>
+          <input id="rescheduleCurrent" type="datetime-local" readonly>
+        </div>
+        <div class="reschedule-field">
+          <label for="rescheduleNew">New Deadline</label>
+          <input id="rescheduleNew" type="datetime-local">
+        </div>
+      </div>
+      <div class="reschedule-note">Saving a new deadline returns the task to <b>Open</b> Mission Focus status.</div>
+      <div class="reschedule-actions">
+        <button class="btn light" type="button" onclick="closeRescheduleModal()">Cancel</button>
+        <button class="btn gold" type="button" onclick="saveReschedule()">Save Reschedule</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -453,5 +592,5 @@
 </script>
 <script src="{{ \App\Support\Asset::url('js/admin-design.js') }}"></script>
 <script src="{{ \App\Support\Asset::url('js/admin-crud.js') }}"></script>
-</body>
-</html>
+<script src="{{ \App\Support\Asset::url('js/admin-live.js') }}"></script>
+</body></html>

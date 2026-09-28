@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CertificateAdminController;
 use App\Http\Controllers\Admin\ConsoleActionController;
 use App\Http\Controllers\Admin\ConsoleController;
 use App\Http\Controllers\Admin\ConsoleCrudController;
+use App\Http\Controllers\Admin\LiveController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EnrollmentAdminController;
 use App\Http\Controllers\CertificateController;
@@ -82,6 +83,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('payments/verify',    [ConsoleActionController::class, 'verifyZelle'])->name('payments.verify');
         Route::get('schedule',            [ConsoleActionController::class, 'schedule'])->name('schedule');
 
+        // Live business channel shared by the Assistant, Owner and Staff screens
+        Route::get('live',                        [LiveController::class, 'state'])->name('live');
+        Route::post('live/metrics',               [LiveController::class, 'publishMetrics'])->name('live.metrics');
+        Route::post('live/updates',               [LiveController::class, 'pushUpdate'])->name('live.updates');
+        Route::post('live/missions',              [LiveController::class, 'assignMission'])->name('live.missions');
+        Route::patch('live/missions/{mission}',   [LiveController::class, 'updateMission'])->name('live.missions.update');
+        Route::delete('live/missions/{mission}',  [LiveController::class, 'deleteMission'])->name('live.missions.delete');
+
         // CRUD behind the console's modals
         Route::get('lookups',                       [ConsoleCrudController::class, 'lookups'])->name('lookups');
         Route::get('enroll/{enrollment}',           [ConsoleCrudController::class, 'showEnrollment'])->name('enroll.show');
@@ -91,7 +100,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('certificates/issue',           [ConsoleCrudController::class, 'issueCertificate'])->name('cert.issue');
         Route::post('certificates/{certificate}/revoke',  [ConsoleCrudController::class, 'revokeCertificate'])->name('cert.revoke');
         Route::post('certificates/{certificate}/reissue', [ConsoleCrudController::class, 'reissueCertificate'])->name('cert.reissue');
-        Route::post('settings/save',                [ConsoleCrudController::class, 'saveSetting'])->name('settings.save');
+        Route::post('settings/save',                [ConsoleCrudController::class, 'saveSetting'])->middleware('owner')->name('settings.save');
         Route::get('export',                        [ConsoleCrudController::class, 'export'])->name('export');
 
         Route::get('enrollments', [EnrollmentAdminController::class, 'index'])->name('enrollments');

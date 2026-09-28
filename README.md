@@ -83,6 +83,21 @@ Dated classes are created on demand: a date nobody has booked reports full
 capacity, so no one has to pre-create a calendar. An admin can then change a
 specific class's capacity or deactivate it.
 
+## Accounts
+
+The seeded `admin@pacifictradetech.com` is the **owner** (Owner Settings and
+payment configuration). Everyone else signs in as an **assistant**, who gets the
+Assistant Command console without owner controls.
+
+```bash
+php artisan ptt:user ana@pacifictt.com "Ana Lopez" assistant     # prints a temporary password once
+php artisan ptt:user ana@pacifictt.com "Ana Lopez" assistant --deactivate
+```
+
+A deactivated account keeps its history but can no longer sign in. Active
+accounts and active instructors are the people a Mission Focus task can be
+assigned to.
+
 ## Deploying to cPanel
 
 The host keeps the application core **outside** the web root:

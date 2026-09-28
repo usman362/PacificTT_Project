@@ -157,11 +157,13 @@
     </div></form>`;
   }
 
-  async function newEnrollment() {
+  // prefill: starting values (e.g. from a lead). afterCreate runs once the
+  // enrollment exists and before the console reloads.
+  async function newEnrollment(prefill, afterCreate) {
     const lk = await getLookups();
     openModal({
       title: 'New enrollment',
-      body: enrollmentForm(lk, {}),
+      body: enrollmentForm(lk, prefill || {}),
       actions: `<button class="btn light" type="button" onclick="pttCloseModal()">Cancel</button>
                 <button class="btn gold" type="button" id="saveEnroll">Create enrollment</button>`
     });
@@ -171,6 +173,7 @@
         const res = await api('POST', R().enrollStore, values(document.getElementById('enrollForm')));
         closeModal();
         toast(`Enrollment ${res.reference} created.`, 'good');
+        if (typeof afterCreate === 'function') { try { await afterCreate(res); } catch (e) { /* reload shows the truth */ } }
         setTimeout(() => location.reload(), 700);
       } catch (err) { btn.disabled = false; markFields(err.fields); modalError(err.message); }
     };
@@ -354,60 +357,51 @@
 (function () {
   'use strict';
 
-  window.inviteInstructor = async function () {
+  /* ── Onboarding invitation (inline form on the Instructors page) ────── */
+  function inviteStatus(invite, code, link, onboarding) {
+    document.getElementById('inviteState').textContent = invite;
+    document.getElementById('codeState').textContent = code;
+    document.getElementById('linkState').textContent = link;
+    document.getElementById('completeState').textContent = onboarding;
+  }
+
+  window.sendInvite = async function () {
     const R = window.PTT.routes;
-    const body = `<form id="inviteForm"><div class="fieldgrid">
-        <div class="field"><label for="i_name">Name</label>
-          <input id="i_name" name="name" placeholder="Optional"><div class="err"></div></div>
-        <div class="field"><label for="i_email">Email *</label>
-          <input id="i_email" name="email" type="email" placeholder="instructor@example.com"><div class="err"></div></div>
-      </div></form>
-      <p class="note" style="margin-top:12px">
-        They get a single-use link and a 6-digit code by email. The link stops
-        working once they submit, and expires after 14 days.</p>
-      <div id="inviteResult" style="display:none;margin-top:14px">
-        <div class="verifybox"><b>Invitation ready</b><br>
-          <span id="inviteExpiry"></span>
-          <div style="margin-top:8px"><input id="inviteLink" readonly style="width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:12px"></div>
-          <button class="btn light" type="button" style="margin-top:8px" onclick="
-            document.getElementById('inviteLink').select();
-            document.execCommand('copy');
-            window.pttToast('Link copied.','good');">Copy link</button>
-        </div>
-      </div>`;
+    const name  = document.getElementById('inviteName').value.trim();
+    const email = document.getElementById('inviteEmail').value.trim();
+    // "$1,200 / day" → 1200
+    const rateText = document.getElementById('inviteRate').value.replace(/[^0-9.]/g, '');
+    if (!name || !email || !email.includes('@')) {
+      window.pttToast('Enter instructor name and a valid email address.', 'bad');
+      return;
+    }
+    const btn = document.querySelector('#inviteInstructor .btn.gold');
+    if (btn) btn.disabled = true;
+    try {
+      const res = await fetch(R.inviteInstructor, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', 'Accept': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+        },
+        body: JSON.stringify({ name, email, rate: rateText === '' ? null : Number(rateText) })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || Object.values(data.errors || {}).flat()[0] || 'Could not send the invitation.');
+      // The code is generated and emailed when the instructor opens the link.
+      inviteStatus('EMAIL SENT', 'SENT ON OPEN', 'ACTIVE / ONE USE', 'AWAITING INSTRUCTOR');
+      window.pttToast((data.reused ? 'Existing invitation re-sent to ' : 'Onboarding email sent to ') + data.email + '. Link expires ' + data.expires + '.', 'good');
+    } catch (e) {
+      window.pttToast(e.message, 'bad');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  };
 
-    window.pttOpenModal({
-      title: 'Send onboarding invite',
-      body,
-      actions: `<button class="btn light" type="button" onclick="pttCloseModal()">Close</button>
-                <button class="btn gold" type="button" id="doInvite">Send invite</button>`
-    });
-
-    document.getElementById('doInvite').onclick = async (ev) => {
-      const btn = ev.currentTarget; btn.disabled = true;
-      const payload = {
-        email: document.getElementById('i_email').value.trim(),
-        name:  document.getElementById('i_name').value.trim()
-      };
-      try {
-        const res = await fetch(R.inviteInstructor, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json', 'Accept': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
-          },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || Object.values(data.errors || {}).flat()[0] || 'Could not send it.');
-        document.getElementById('inviteResult').style.display = 'block';
-        document.getElementById('inviteLink').value = data.link;
-        document.getElementById('inviteExpiry').textContent =
-          (data.reused ? 'An unused invitation already existed, so that one is being reused. ' : '') +
-          'Expires ' + data.expires + '.';
-        btn.disabled = false;
-        window.pttToast(data.reused ? 'Existing invitation reused.' : 'Invitation sent.', 'good');
-      } catch (e) { btn.disabled = false; window.pttToast(e.message, 'bad'); }
-    };
+  window.resetInvite = function () {
+    document.getElementById('inviteName').value = '';
+    document.getElementById('inviteEmail').value = '';
+    document.getElementById('inviteRate').value = '$1,200 / day';
+    inviteStatus('NOT SENT', 'NOT GENERATED', 'INACTIVE', 'PENDING');
   };
 })();

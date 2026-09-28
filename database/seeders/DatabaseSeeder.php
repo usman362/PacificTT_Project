@@ -13,11 +13,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ── Admin login ──────────────────────────────────────────────────
+        // The owner account: Owner Settings and payment configuration are
+        // reachable from this account only.
         User::updateOrCreate(
             ['email' => 'admin@pacifictradetech.com'],
             [
-                'name'     => 'PTT Admin',
-                'password' => Hash::make('ChangeMe!2026'),
+                'name'      => 'PTT Admin',
+                'password'  => Hash::make('ChangeMe!2026'),
+                'role'      => 'owner',
+                'is_active' => true,
             ]
         );
 

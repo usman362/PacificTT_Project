@@ -13,6 +13,12 @@ return [
     ],
 
     // Seats per dated class unless an admin overrides that class.
+    // Short tier names the operations screens use for each programme.
+    'program_tiers' => [
+        'plc-electrical-controls' => 'Core',
+        'advanced-plc-automation' => 'Advanced',
+    ],
+
     'seats_per_instructor' => (int) env('PTT_SEATS_PER_INSTRUCTOR', 8),
 
     'default_capacity' => 12,

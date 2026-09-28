@@ -12,7 +12,7 @@ class InstructorInvitation extends Model
     protected $fillable = [
         'token', 'email', 'name', 'otp_hash', 'otp_expires_at', 'otp_attempts',
         'otp_sent_at', 'email_verified', 'expires_at', 'consumed_at',
-        'instructor_id', 'invited_by',
+        'instructor_id', 'invited_by', 'daily_rate_cents',
     ];
 
     protected $hidden = ['otp_hash'];
@@ -35,12 +35,13 @@ class InstructorInvitation extends Model
         return $this->belongsTo(Instructor::class);
     }
 
-    public static function issue(string $email, ?string $name, ?int $invitedBy = null): self
+    public static function issue(string $email, ?string $name, ?int $invitedBy = null, ?int $dailyRateCents = null): self
     {
         return static::create([
-            'token'      => Str::random(48),
-            'email'      => $email,
-            'name'       => $name,
+            'token'            => Str::random(48),
+            'email'            => $email,
+            'name'             => $name,
+            'daily_rate_cents' => $dailyRateCents ?? 120000,
             'expires_at' => now()->addDays(14),
             'invited_by' => $invitedBy,
         ]);

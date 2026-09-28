@@ -137,6 +137,20 @@ class SeatAvailability
             ->count();
     }
 
+    /** Programme tiers ("Core", "Advanced") with seats held in this session. */
+    public function tiersForSlot(Carbon $date, string $slot): array
+    {
+        $tiers = config('ptt.program_tiers', []);
+
+        return Enrollment::whereDate('preferred_date', $date)
+            ->whereHas('classSession', fn ($q) => $q->where('label', $slot))
+            ->whereIn('status', $this->holdingStatuses())
+            ->with('program:id,slug,name')
+            ->get()
+            ->map(fn ($e) => $tiers[$e->program?->slug] ?? $e->program?->name)
+            ->filter()->unique()->sort()->values()->all();
+    }
+
     public function capacityForDate(Carbon $date): int
     {
         return collect(config('ptt.session_slots'))
@@ -193,7 +207,7 @@ class SeatAvailability
     }
 
     /** Statuses that occupy a seat. */
-    private function holdingStatuses(): array
+    public function holdingStatuses(): array
     {
         return ['started', 'waiver_signed', 'deposit_paid', 'paid', 'completed'];
     }
