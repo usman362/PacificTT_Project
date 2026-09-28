@@ -89,6 +89,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/',                          [OwnerController::class, 'index'])->name('dashboard');
             Route::post('targets',                   [OwnerController::class, 'saveTargets'])->name('targets');
             Route::post('controls',                  [OwnerController::class, 'saveControls'])->name('controls');
+            Route::post('figures/{group}',           [OwnerController::class, 'saveFigures'])->name('figures');
             Route::get('objectives',                 [OwnerController::class, 'objectives'])->name('objectives');
             Route::post('objectives',                [OwnerController::class, 'storeObjective'])->name('objectives.store');
             Route::patch('objectives/{objective}',   [OwnerController::class, 'updateObjective'])->name('objectives.update');

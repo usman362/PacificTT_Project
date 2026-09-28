@@ -24,7 +24,7 @@
       <nav>
         <button data-view="weekly">Weekly Review</button>
         <button data-view="progress">Progress Tracker</button>
-        <button data-view="sops">SOP Library — 75%</button>
+        <button data-view="sops">SOP Library — {{ $p2['sopPct'] }}%</button>
         <button data-view="targets">Owner Settings</button>
       </nav>
       <div class="nav-label">DAILY OPERATIONS</div>
@@ -72,9 +72,9 @@
               <div class="card-head"><div><h2>Operating Pulse</h2><p>Current month against target</p></div></div>
               <table><tbody>
                 <tr><td>Lead conversion</td><td><strong>{{ $pulse['conversion'] }}%</strong></td><td class="{{ $pulse['conversionDelta'] >= 0 ? 'up' : 'down' }}">{{ $pulse['conversionDelta'] >= 0 ? '+' : '' }}{{ $pulse['conversionDelta'] }} pts</td></tr>
-                <tr><td>Gross margin</td><td><strong>—</strong></td><td></td></tr>
-                <tr><td>Cash reserve</td><td><strong>—</strong></td><td></td></tr>
-                <tr><td>Equipment uptime</td><td><strong>—</strong></td><td></td></tr>
+                <tr><td>Gross margin</td><td><strong>{{ $p2['margin'] === null ? '—' : $p2['margin'].'%' }}</strong></td><td></td></tr>
+                <tr><td>Cash reserve</td><td><strong>{{ $p2['reserve'] === null ? '—' : $p2['reserve'].' mo' }}</strong></td><td class="{{ $p2['reservePass'] ? 'up' : '' }}">{{ $p2['reserve'] === null ? '' : ($p2['reservePass'] ? 'Gate passed' : 'Below target') }}</td></tr>
+                <tr><td>Equipment uptime</td><td><strong>{{ $p2['uptime'] === null ? '—' : $p2['uptime'].'%' }}</strong></td><td style="color:var(--amber)">{{ $p2['eqDown'] ? 'Watch' : '' }}</td></tr>
               </tbody></table>
             </article>
           </div>
@@ -82,7 +82,7 @@
 
         <section class="view" id="enrollment">
           <div class="kpis">
-            <div class="kpi"><label>Leads This Month</label><strong>{{ $enroll['leads'] }}</strong><small>— cost per lead</small></div>
+            <div class="kpi"><label>Leads This Month</label><strong>{{ $enroll['leads'] }}</strong><small>{{ $p2['costPerLead'] === null ? '—' : '$'.$p2['costPerLead'] }} cost per lead</small></div>
             <div class="kpi"><label>Consultations</label><strong>{{ $enroll['consult'] }}</strong><small>{{ $enroll['consultPct'] }}% of all leads</small></div>
             <div class="kpi"><label>Enrollments</label><strong id="enrollmentKpi">{{ $enroll['enrolled'] }}</strong><small>Goal: {{ (int) $targets['target_enrollments'] }}</small></div>
             <div class="kpi"><label>Projected Tuition</label><strong id="tuitionKpi">${{ number_format($enroll['enrolled'] * $bootstrap['blendedTuition']) }}</strong><small>Blended enrollment value</small></div>
@@ -116,152 +116,164 @@
         </section>
 
         <section class="view" id="training">
-          <div class="kpis">
-            <div class="kpi"><label>Today's Sessions</label><strong>3</strong><small>Morning · afternoon · evening</small></div>
-            <div class="kpi"><label>Seats Booked</label><strong>19 / 24</strong><small>79% utilization</small></div>
-            <div class="kpi"><label>Equipment Uptime</label><strong>96.4%</strong><small class="down">1 rig needs service</small></div>
-            <div class="kpi"><label>Attendance</label><strong>97%</strong><small>0 no-shows</small></div>
-          </div>
-          <article class="card" style="margin-bottom:17px">
-            <div class="card-head"><div><h2>Training Floor Readiness</h2><p>Classes, instructors, rooms, and equipment</p></div></div>
-            <div class="floor">
-              <article><span class="badge">In session</span><h3>Industrial Electrical</h3><small>8:00 AM · Lab A · 8/8 seats</small><div class="checklist"><span>✓ Curriculum loaded</span><span>✓ Roster verified</span><span>✓ Instructor confirmed</span><span>✓ Equipment ready</span></div></article>
-              <article><span class="badge">Ready</span><h3>PLC Fundamentals</h3><small>1:00 PM · Controls Lab · 6/8 seats</small><div class="checklist"><span>✓ Curriculum loaded</span><span>✓ Roster verified</span><span>✓ Instructor confirmed</span><span>✓ Equipment ready</span></div></article>
-              <article class="warn"><span class="badge warn">Action required</span><h3>HVAC/R — Chillers</h3><small>6:00 PM · Lab B · 5/8 seats</small><div class="checklist"><span>✓ Curriculum loaded</span><span>✓ Roster verified</span><span class="fail">✕ Instructor unassigned</span><span class="fail">✕ Chiller rig offline</span></div></article>
-            </div>
-          </article>
-          <div class="grid equal">
-            <article class="card"><div class="card-head"><div><h2>Equipment Status</h2><p>Hands-on training stations</p></div></div><table><tbody>
-              <tr><td>Electrical boards</td><td>8 / 8 online</td><td><span class="badge">Operational</span></td></tr>
-              <tr><td>PLC / HMI stations</td><td>8 / 8 online</td><td><span class="badge">Operational</span></td></tr>
-              <tr><td>HVAC package trainers</td><td>4 / 4 online</td><td><span class="badge">Operational</span></td></tr>
-              <tr><td>Chiller training rig</td><td>0 / 1 online</td><td><span class="badge warn">Service required</span></td></tr>
-            </tbody></table></article>
-            <article class="card"><div class="card-head"><div><h2>Quality Controls</h2><p>Student experience and delivery</p></div></div><table><tbody>
-              <tr><td>Modules completed</td><td><strong>87 / 92</strong></td></tr>
-              <tr><td>Skills assessments passed</td><td><strong>91%</strong></td></tr>
-              <tr><td>Safety compliance</td><td><strong>100%</strong></td></tr>
-              <tr><td>Completion forecast</td><td><strong>94%</strong></td></tr>
-            </tbody></table></article>
-          </div>
-        </section>
+  <div class="kpis">
+    <div class="kpi"><label>Today's Sessions</label><strong>{{ $floor['count'] }}</strong><small>{{ implode(' · ', array_map(fn($x)=>$x['time'].' '.$x['meridiem'], $floor['sessions'])) }}</small></div>
+    <div class="kpi"><label>Seats Booked</label><strong>{{ $floor['booked'] }} / {{ $floor['capacity'] }}</strong><small>{{ $floor['capacity'] ? round($floor['booked'] / $floor['capacity'] * 100) : 0 }}% utilization</small></div>
+    <div class="kpi"><label>Equipment Uptime</label><strong>{{ $p2['uptime'] === null ? '—' : $p2['uptime'].'%' }}</strong><small class="{{ $p2['eqDown'] ? 'down' : '' }}">{{ $p2['uptime'] === null ? 'Add equipment below' : ($p2['eqDown'] ? $p2['eqDown'].' station'.($p2['eqDown'] === 1 ? ' needs' : 's need').' service' : 'All stations online') }}</small></div>
+    <div class="kpi"><label>Attendance</label><strong>{{ $p2['attendance'] === null ? '—' : $p2['attendance'].'%' }}</strong><small>Assistant-published live metric</small></div>
+  </div>
+  <article class="card" style="margin-bottom:17px">
+    <div class="card-head"><div><h2>Training Floor Readiness</h2><p>Classes, instructors, rooms, and equipment</p></div></div>
+    <div class="floor">
+      @foreach($floor['sessions'] as $x)
+      @php $instOk = $x['capacity'] > 0; $eqOk = $p2['eqDown'] === 0; @endphp
+      <article class="{{ ($instOk && $eqOk) ? '' : 'warn' }}"><span class="badge {{ ($instOk && $eqOk) ? '' : 'warn' }}">{{ ($instOk && $eqOk) ? $x['status'] : 'Action required' }}</span><h3>{{ $x['title'] }}</h3><small>{{ $x['time'] }} {{ $x['meridiem'] }} · {{ $x['instructors'] }} · {{ $x['booked'] }}/{{ $x['capacity'] }} seats</small><div class="checklist"><span>✓ {{ $x['booked'] }} student{{ $x['booked'] === 1 ? '' : 's' }} on roster</span><span class="{{ $instOk ? '' : 'fail' }}">{{ $instOk ? '✓ Instructor confirmed' : '✕ Instructor unassigned' }}</span><span class="{{ $eqOk ? '' : 'fail' }}">{{ $eqOk ? '✓ Equipment ready' : '✕ Equipment needs service' }}</span></div></article>
+      @endforeach
+    </div>
+  </article>
+  <div class="grid equal">
+    <article class="card"><div class="card-head"><div><h2>Equipment Status</h2><p>Hands-on training stations</p></div><button class="edit-fig" type="button" data-edit="equipment">Edit</button></div>
+      <table><tbody>
+        @forelse($p2['equipment'] as $q)
+        <tr><td>{{ $q['name'] }}</td><td>{{ $q['online'] }} / {{ $q['total'] }} online</td><td><span class="badge {{ $q['online'] < $q['total'] ? 'warn' : '' }}">{{ $q['online'] < $q['total'] ? 'Service required' : 'Operational' }}</span></td></tr>
+        @empty
+        <tr><td colspan="3">No equipment recorded yet — use Edit to add training stations.</td></tr>
+        @endforelse
+      </tbody></table>
+    </article>
+    <article class="card"><div class="card-head"><div><h2>Quality Controls</h2><p>Student experience and delivery</p></div><button class="edit-fig" type="button" data-edit="quality">Edit</button></div>
+      @php $qc = $p2['quality']; @endphp
+      <table><tbody>
+        <tr><td>Modules completed</td><td><strong>{{ $qc['modules_total'] ? $qc['modules_done'].' / '.$qc['modules_total'] : '—' }}</strong></td></tr>
+        <tr><td>Skills assessments passed</td><td><strong>{{ $qc['assessments'] === null ? '—' : ($qc['assessments'] + 0).'%' }}</strong></td></tr>
+        <tr><td>Safety compliance</td><td><strong>{{ $qc['safety'] === null ? '—' : ($qc['safety'] + 0).'%' }}</strong></td></tr>
+        <tr><td>Completion forecast</td><td><strong>{{ $p2['completion'] === null ? '—' : $p2['completion'].'%' }}</strong></td></tr>
+      </tbody></table>
+    </article>
+  </div>
+</section>
 
         <section class="view" id="finance">
-          <div class="kpis">
-            <div class="kpi"><label>Cash Collected</label><strong>$142,680</strong><small>Month to date</small></div>
-            <div class="kpi"><label>Accounts Receivable</label><strong>$18,600</strong><small class="down">12.5% of billed tuition</small></div>
-            <div class="kpi"><label>Gross Margin</label><strong>61%</strong><small>$87,035 gross profit</small></div>
-            <div class="kpi"><label>Operating Reserve</label><strong>6.8 mo</strong><small class="up">Expansion gate passed</small></div>
-          </div>
-          <div class="grid">
-            <article class="card">
-              <div class="card-head"><div><h2>Revenue Trend</h2><p>Six-month collected revenue</p></div></div>
-              <div class="bars">
-                <div class="bar"><i style="height:46%"></i><small>Apr</small></div><div class="bar"><i style="height:51%"></i><small>May</small></div><div class="bar"><i style="height:57%"></i><small>Jun</small></div><div class="bar"><i style="height:66%"></i><small>Jul</small></div><div class="bar"><i style="height:77%"></i><small>Aug</small></div><div class="bar"><i style="height:92%"></i><small>Sep</small></div>
-              </div>
-            </article>
-            <article class="card">
-              <div class="card-head"><div><h2>Operating Costs</h2><p>$71,000 month to date</p></div></div>
-              <div class="costs">
-                <div class="cost-row"><div><span>Instructor payroll</span><strong>$31,240</strong></div><div class="progress"><i style="width:78%;background:var(--ink)"></i></div></div>
-                <div class="cost-row"><div><span>Facility & utilities</span><strong>$18,400</strong></div><div class="progress"><i style="width:46%;background:#536575"></i></div></div>
-                <div class="cost-row"><div><span>Advertising</span><strong>$12,400</strong></div><div class="progress"><i style="width:31%;background:#7d8e9d"></i></div></div>
-                <div class="cost-row"><div><span>Supplies & equipment</span><strong>$8,960</strong></div><div class="progress"><i style="width:22%;background:#aab6be"></i></div></div>
-              </div>
-            </article>
-          </div>
-          <article class="card"><div class="card-head"><div><h2>Four Revenue Engines</h2><p>Protect core cash flow while building higher-value channels</p></div></div><div class="table-wrap"><table>
-            <thead><tr><th>Engine</th><th>Revenue</th><th>Share</th><th>Status</th><th>Programs</th></tr></thead>
-            <tbody>
-              <tr><td><strong>Core training</strong></td><td>$88,240</td><td>62%</td><td><span class="badge">Stable</span></td><td>Electrical · HVAC/R · PLC</td></tr>
-              <tr><td><strong>Advanced programs</strong></td><td>$27,500</td><td>19%</td><td><span class="badge">Growing</span></td><td>HMI · SCADA · Chillers</td></tr>
-              <tr><td><strong>Specialty training</strong></td><td>$11,940</td><td>8%</td><td><span class="badge warn">Build</span></td><td>VFDs · Rectifiers · Troubleshooting</td></tr>
-              <tr><td><strong>B2B training</strong></td><td>$15,000</td><td>11%</td><td><span class="badge warn">Priority</span></td><td>Employer cohorts · Custom programs</td></tr>
-            </tbody>
-          </table></div></article>
-        </section>
+  <div class="kpis">
+    <div class="kpi"><label>Cash Collected</label><strong>${{ number_format($p2['cashMtd']) }}</strong><small>Month to date</small></div>
+    <div class="kpi"><label>Accounts Receivable</label><strong>${{ number_format($p2['ar']) }}</strong><small class="{{ $p2['ar'] > 0 ? 'down' : '' }}">{{ $p2['arPct'] }}% of billed tuition</small></div>
+    <div class="kpi"><label>Gross Margin</label><strong>{{ $p2['margin'] === null ? '—' : $p2['margin'].'%' }}</strong><small>{{ $p2['margin'] !== null ? ($p2['profit'] < 0 ? '−$' : '$').number_format(abs($p2['profit'])).' gross '.($p2['profit'] < 0 ? 'loss' : 'profit') : ($p2['costs'] ? 'No revenue collected yet this month' : 'Enter this month\'s costs') }}</small></div>
+    <div class="kpi"><label>Operating Reserve</label><strong>{{ $p2['reserve'] === null ? '—' : $p2['reserve'].' mo' }}</strong><small class="{{ $p2['reservePass'] ? 'up' : '' }}">{{ $p2['reserve'] === null ? 'Enter reserve and costs' : ($p2['reservePass'] ? 'Expansion gate passed' : 'Below '.($targets['target_reserve'] + 0).'-month target') }}</small></div>
+  </div>
+  <div class="grid">
+    <article class="card"><div class="card-head"><div><h2>Revenue Trend</h2><p>Six-month collected revenue</p></div></div>
+      <div class="bars">
+        @foreach($p2['trend'] as $t)<div class="bar" title="${{ number_format($t['value']) }}"><i style="height:{{ $t['height'] }}%"></i><small>{{ $t['label'] }}</small></div>@endforeach
+      </div>
+    </article>
+    <article class="card"><div class="card-head"><div><h2>Operating Costs</h2><p>${{ number_format($p2['costTotal']) }} month to date</p></div><button class="edit-fig" type="button" data-edit="costs">Edit</button></div>
+      <div class="costs">
+        @php $shades = ['var(--ink)', '#536575', '#7d8e9d', '#aab6be']; @endphp
+        @forelse($p2['costs'] as $n => $c)
+        <div class="cost-row"><div><span>{{ $c['name'] }}</span><strong>${{ number_format($c['amount']) }}</strong></div><div class="progress"><i style="width:{{ round($c['amount'] / $p2['costPeak'] * 100) }}%;background:{{ $shades[min($n, 3)] }}"></i></div></div>
+        @empty
+        <p class="deadline-note">No costs entered for {{ now()->format('F') }} — use Edit to add payroll, facility, advertising and supplies.</p>
+        @endforelse
+      </div>
+    </article>
+  </div>
+  <article class="card"><div class="card-head"><div><h2>Four Revenue Engines</h2><p>Protect core cash flow while building higher-value channels</p></div><button class="edit-fig" type="button" data-edit="finance">Edit</button></div>
+    <div class="table-wrap"><table><thead><tr><th>Engine</th><th>Revenue</th><th>Share</th><th>Status</th><th>Programs</th></tr></thead><tbody>
+      @foreach($p2['engines'] as $g)
+      <tr><td><strong>{{ $g['name'] }}</strong></td><td>${{ number_format($g['revenue']) }}</td><td>{{ $g['share'] }}%</td><td><span class="badge {{ $g['class'] }}">{{ $g['status'] }}</span></td><td>{{ $g['programs'] }}</td></tr>
+      @endforeach
+    </tbody></table></div>
+  </article>
+</section>
 
         <section class="view" id="people">
-          <div class="kpis">
-            <div class="kpi"><label>Active Staff</label><strong>4</strong><small>2 instructors · 1 admin · 1 lab</small></div>
-            <div class="kpi"><label>Instructor Utilization</label><strong>74%</strong><small>Healthy range</small></div>
-            <div class="kpi"><label>Student Satisfaction</label><strong>4.8 / 5</strong><small>58 responses</small></div>
-            <div class="kpi"><label>Safety Streak</label><strong>47 days</strong><small class="up">0 incidents</small></div>
-          </div>
-          <div class="grid equal">
-            <article class="card">
-              <div class="card-head"><div><h2>Team Coverage</h2><p>Roles and operating load</p></div></div>
-              <div class="staff">
-                <div class="person"><div class="avatar">PS</div><div><strong>Pete Sotelo</strong><small>Owner / Lead Instructor</small></div><div class="progress"><i style="width:82%;background:var(--ink)"></i></div><span class="badge">On site</span></div>
-                <div class="person"><div class="avatar">MR</div><div><strong>Marco Ruiz</strong><small>PLC Instructor</small></div><div class="progress"><i style="width:68%;background:var(--ink)"></i></div><span class="badge">In class</span></div>
-                <div class="person"><div class="avatar">AL</div><div><strong>Ana Lopez</strong><small>Enrollment / Admin</small></div><div class="progress"><i style="width:74%;background:var(--ink)"></i></div><span class="badge">Available</span></div>
-                <div class="person"><div class="avatar">JT</div><div><strong>James Tran</strong><small>Lab Assistant</small></div><div class="progress"><i style="width:61%;background:var(--ink)"></i></div><span class="badge">On site</span></div>
-              </div>
-            </article>
-            <article class="card">
-              <div class="card-head"><div><h2>Owner Dependency</h2><p>Move these functions off Pete before scaling</p></div><span class="badge warn">63% delegated</span></div>
-              <table><tbody>
-                <tr><td>Equipment diagnostics</td><td><span class="badge warn">Founder only</span></td></tr>
-                <tr><td>Employer partnerships</td><td><span class="badge warn">Founder only</span></td></tr>
-                <tr><td>Curriculum approval</td><td><span class="badge warn">Founder only</span></td></tr>
-                <tr><td>Lead follow-up</td><td><span class="badge">Delegated</span></td></tr>
-              </tbody></table>
-            </article>
-          </div>
-        </section>
+  <div class="kpis">
+    <div class="kpi"><label>Active Staff</label><strong>{{ $p2['staffUsers'] + $p2['staffInstructors'] }}</strong><small>{{ $p2['staffInstructors'] }} instructor{{ $p2['staffInstructors'] === 1 ? '' : 's' }} · {{ $p2['staffUsers'] }} office</small></div>
+    <div class="kpi"><label>Instructor Utilization</label><strong>{{ $p2['instUtil'] }}%</strong><small>{{ $p2['instUtil'] >= $targets['target_utilization'] ? 'Healthy range' : 'Below '.(int) $targets['target_utilization'].'% target' }}</small></div>
+    <div class="kpi"><label>Student Satisfaction <button class="edit-fig" type="button" data-edit="satisfaction">Edit</button></label><strong>{{ $p2['satisfaction']['score'] === null ? '—' : ($p2['satisfaction']['score'] + 0).' / 5' }}</strong><small>{{ $p2['satisfaction']['responses'] === null ? 'Not entered' : $p2['satisfaction']['responses'].' responses' }}</small></div>
+    <div class="kpi"><label>Safety Streak <button class="edit-fig" type="button" data-edit="safety">Edit</button></label><strong>{{ $p2['safeDays'] === null ? '—' : $p2['safeDays'].' days' }}</strong><small class="{{ ($p2['incidents'] ?? 1) == 0 ? 'up' : '' }}">{{ $p2['incidents'] === null ? 'Not entered' : $p2['incidents'].' incident'.($p2['incidents'] == 1 ? '' : 's') }}</small></div>
+  </div>
+  <div class="grid equal">
+    <article class="card"><div class="card-head"><div><h2>Team Coverage</h2><p>Roles and operating load</p></div></div>
+      <div class="staff">
+        @foreach($p2['team'] as $m)
+        <div class="person"><div class="avatar">{{ $m['initials'] }}</div><div><strong>{{ $m['name'] }}</strong><small>{{ $m['role'] }}</small></div><div class="progress"><i style="width:{{ $m['load'] ?? 0 }}%;background:var(--ink)"></i></div><span class="badge">{{ $m['status'] }}</span></div>
+        @endforeach
+      </div>
+    </article>
+    <article class="card"><div class="card-head"><div><h2>Owner Dependency</h2><p>Move these functions off {{ strtok($user->name, ' ') }} before scaling</p></div><span class="badge warn">{{ $p2['depPct'] === null ? '—' : $p2['depPct'].'% delegated' }}</span><button class="edit-fig" type="button" data-edit="dependency">Edit</button></div>
+      <table><tbody>
+        @forelse($p2['dependency'] as $d)
+        <tr><td>{{ $d['name'] }}</td><td><span class="badge {{ $d['delegated'] ? '' : 'warn' }}">{{ $d['delegated'] ? 'Delegated' : 'Founder only' }}</span></td></tr>
+        @empty
+        <tr><td colspan="2">List the functions only you handle today — use Edit.</td></tr>
+        @endforelse
+      </tbody></table>
+    </article>
+  </div>
+</section>
 
         <section class="view" id="growth">
-          <div class="growth-hero"><div><label>CURRENT PHASE · YEAR 1</label><h2>Prove the Operating Machine</h2><p>Standardize delivery, increase practical seat utilization, and reduce founder dependency before adding fixed overhead.</p></div><div class="phase"><strong>68% complete</strong><div class="progress"><i style="width:68%"></i></div></div></div>
-          <div class="roadmap">
-            <article class="active"><small>YEAR 1 · PROVE</small><h3>Build the operating machine</h3><ul><li>Repeatable curriculum</li><li>Reliable sales funnel</li><li>70–80% utilization</li></ul></article>
-            <article><small>YEAR 2 · OPTIMIZE</small><h3>Increase capacity</h3><ul><li>Fill off-peak sessions</li><li>Build instructor bench</li><li>Grow B2B revenue</li></ul></article>
-            <article><small>YEAR 3 · REPLICATE</small><h3>Launch location two</h3><ul><li>Pass expansion gates</li><li>Install location manager</li><li>Duplicate labs and SOPs</li></ul></article>
-            <article><small>YEAR 4 · REGIONALIZE</small><h3>Centralize support</h3><ul><li>2–4 training hubs</li><li>Shared enrollment</li><li>Corporate training</li></ul></article>
-            <article><small>YEAR 5 · SCALE</small><h3>Expand the platform</h3><ul><li>Licensing options</li><li>Workforce contracts</li><li>Hybrid theory + labs</li></ul></article>
-          </div>
-          <div class="grid">
-            <article class="card">
-              <div class="card-head"><div><h2>Expansion Readiness Gate</h2><p>Maintain all six for 3–6 months</p></div><span class="badge warn" id="gateScore">4 / 6 passed</span></div>
-              <div class="gate-list" id="gateList">
-                <div class="gate" id="utilGate"><b>✕</b><div><strong>80%+ prime-time utilization</strong><small id="utilDetail">79% current</small></div></div>
-                <div class="gate pass"><b>✓</b><div><strong>Consistent profitability</strong><small>6 profitable months</small></div></div>
-                <div class="gate pass"><b>✓</b><div><strong>Six-month cash reserve</strong><small>6.8 months current</small></div></div>
-                <div class="gate pass"><b>✓</b><div><strong>Lead volume supports expansion</strong><small>186 leads per month</small></div></div>
-                <div class="gate" id="managerGate"><b>✕</b><div><strong>Runs without founder</strong><small>Not yet verified</small></div></div>
-                <div class="gate pass"><b>✓</b><div><strong>Instructor pipeline exists</strong><small>2 candidates ready</small></div></div>
-              </div>
-            </article>
-            <article class="card sim">
-              <div class="card-head"><div><h2>Readiness Simulator</h2><p>Test expansion conditions</p></div></div>
-              <label>Prime-time utilization: <strong id="utilValue">79%</strong></label>
-              <input id="utilSlider" type="range" min="50" max="100" value="79">
-              <label class="sim-check"><input id="managerCheck" type="checkbox"> Location manager can operate five days without Pete</label>
-              <div class="big-result"><small>Expansion readiness</small><strong id="readinessValue">67%</strong></div>
-            </article>
-          </div>
-        </section>
+  @php
+    $phases = [1 => ['PROVE', 'Build the operating machine', 'Prove the Operating Machine', 'Standardize delivery, increase practical seat utilization, and reduce founder dependency before adding fixed overhead.', ['Repeatable curriculum', 'Reliable sales funnel', '70–80% utilization']],
+               2 => ['OPTIMIZE', 'Increase capacity', 'Increase Capacity', 'Fill off-peak sessions, build the instructor bench and grow B2B revenue.', ['Fill off-peak sessions', 'Build instructor bench', 'Grow B2B revenue']],
+               3 => ['REPLICATE', 'Launch location two', 'Launch Location Two', 'Pass the expansion gates, install a location manager and duplicate labs and SOPs.', ['Pass expansion gates', 'Install location manager', 'Duplicate labs and SOPs']],
+               4 => ['REGIONALIZE', 'Centralize support', 'Centralize Support', 'Run two to four training hubs on shared enrollment and corporate training.', ['2–4 training hubs', 'Shared enrollment', 'Corporate training']],
+               5 => ['SCALE', 'Expand the platform', 'Expand the Platform', 'Licensing, workforce contracts and hybrid theory plus labs.', ['Licensing options', 'Workforce contracts', 'Hybrid theory + labs']]];
+    $ph = (int) $p2['growth']['phase']; $pct = $p2['growth']['pct'];
+  @endphp
+  <div class="growth-hero"><div><label>CURRENT PHASE · YEAR {{ $ph }}</label><h2>{{ $phases[$ph][2] }}</h2><p>{{ $phases[$ph][3] }}</p></div><div class="phase"><strong>{{ $pct === null ? '—' : $pct.'% complete' }}</strong><div class="progress"><i style="width:{{ $pct ?? 0 }}%"></i></div><button class="edit-fig" type="button" data-edit="growth">Edit</button></div></div>
+  <div class="roadmap">
+    @foreach($phases as $n => $x)
+    <article class="{{ $n === $ph ? 'active' : '' }}"><small>YEAR {{ $n }} · {{ $x[0] }}</small><h3>{{ $x[1] }}</h3><ul>@foreach($x[4] as $li)<li>{{ $li }}</li>@endforeach</ul></article>
+    @endforeach
+  </div>
+  <div class="grid">
+    <article class="card"><div class="card-head"><div><h2>Expansion Readiness Gate</h2><p>Maintain all six for 3–6 months</p></div><span class="badge warn" id="gateScore">— / 6 passed</span></div>
+      <div class="gate-list" id="gateList">
+        <div class="gate" id="utilGate"><b>✕</b><div><strong>{{ (int) $targets['target_utilization'] }}%+ prime-time utilization</strong><small id="utilDetail">{{ $p2['utilNow'] }}% current</small></div></div>
+        @foreach(['profit', 'reserve', 'leads'] as $gk)@php $g = $p2['gates'][$gk]; @endphp
+        <div class="gate {{ $g[1] ? 'pass' : '' }}"><b>{{ $g[1] ? '✓' : '✕' }}</b><div><strong>{{ $g[0] }}</strong><small>{{ $g[2] }}</small></div></div>
+        @endforeach
+        <div class="gate" id="managerGate"><b>✕</b><div><strong>Runs without founder</strong><small>Not yet verified</small></div></div>
+        @php $g = $p2['gates']['pipeline']; @endphp
+        <div class="gate {{ $g[1] ? 'pass' : '' }}"><b>{{ $g[1] ? '✓' : '✕' }}</b><div><strong>{{ $g[0] }}</strong><small>{{ $g[2] }}</small></div></div>
+      </div>
+    </article>
+    <article class="card sim"><div class="card-head"><div><h2>Readiness Simulator</h2><p>Test expansion conditions</p></div></div>
+      <label>Prime-time utilization: <strong id="utilValue">{{ $p2['utilNow'] }}%</strong></label>
+      <input id="utilSlider" type="range" min="0" max="100" value="{{ $p2['utilNow'] }}">
+      <label class="sim-check"><input id="managerCheck" type="checkbox" @checked($p2['managerVerified'])> Location manager can operate five days without {{ strtok($user->name, ' ') }}</label>
+      <div class="big-result"><small>Expansion readiness</small><strong id="readinessValue">—</strong></div>
+    </article>
+  </div>
+</section>
 
         <section class="view" id="weekly">
-          <div class="management-hero"><div><small>MANAGEMENT RHYTHM</small><h2>Weekly Review</h2><p>Review performance, identify missed objectives, and assign the next actions before the new operating week begins.</p></div><span class="badge">30–45 minute review</span></div>
-          <div class="kpis">
-            <div class="kpi"><label>Mission Focus</label><strong>18</strong><small class="up">+4 vs. last week</small></div>
-            <div class="kpi"><label>Noise</label><strong>3</strong><small class="up">−2 missed objectives</small></div>
-            <div class="kpi"><label>Weekly Score</label><strong>86%</strong><small class="up">+11 points</small></div>
-            <div class="kpi"><label>Open Actions</label><strong>5</strong><small>2 due within 48 hours</small></div>
-          </div>
-          <article class="card" style="margin-bottom:17px">
-            <div class="card-head"><div><h2>Monday Management Agenda</h2><p>One decision per exception—avoid reviewing healthy metrics in detail</p></div><span class="badge">Week 36</span></div>
-            <div class="review-grid">
-              <article><h3>Sales & Enrollment</h3><ul><li>186 leads generated</li><li>19 students enrolled</li><li>36 qualified leads need consultation</li><li>Decision: add Friday call block</li></ul></article>
-              <article><h3>Operations & Quality</h3><ul><li>79% seat utilization</li><li>94% completion forecast</li><li>Chiller training rig offline</li><li>Decision: service before next cohort</li></ul></article>
-              <article><h3>Finance & Capacity</h3><ul><li>61% gross margin</li><li>6.8-month cash reserve</li><li>Ad spend 8% above plan</li><li>Decision: retain channel, cap CPL at $45</li></ul></article>
-            </div>
-          </article>
-          <div class="grid equal">
-            <article class="card"><div class="card-head"><div><h2>Wins to Repeat</h2><p>Actions that created measurable progress</p></div></div><label class="task done"><input type="checkbox" checked><span>Evening PLC session reached 88% utilization</span></label><label class="task done"><input type="checkbox" checked><span>Employer partner booked an eight-seat cohort</span></label><label class="task done"><input type="checkbox" checked><span>Student completion remained above 90%</span></label></article>
-            <article class="card"><div class="card-head"><div><h2>Next Seven Days</h2><p>Critical commitments for the upcoming week</p></div></div><label class="task"><input type="checkbox"><span>Restore chiller training rig</span></label><label class="task"><input type="checkbox"><span>Confirm backup HVAC/R instructor</span></label><label class="task"><input type="checkbox"><span>Convert six qualified leads</span></label><label class="task"><input type="checkbox"><span>Finish enrollment and refund SOPs</span></label></article>
-          </div>
-        </section>
+  @php $w = $p2['weekly']; $d = fn($a, $b) => ($a - $b > 0 ? '+' : ($a - $b < 0 ? '−' : '')).abs($a - $b); @endphp
+  <div class="management-hero"><div><small>MANAGEMENT RHYTHM</small><h2>Weekly Review</h2><p>Review performance, identify missed objectives, and assign the next actions before the new operating week begins.</p></div><span class="badge">30–45 minute review</span></div>
+  <div class="kpis">
+    <div class="kpi"><label>Mission Focus</label><strong>{{ $p2['wf'] }}</strong><small class="{{ $p2['wf'] >= $p2['lf'] ? 'up' : 'down' }}">{{ $d($p2['wf'], $p2['lf']) ?: '0' }} vs. last week</small></div>
+    <div class="kpi"><label>Noise</label><strong>{{ $p2['wn'] }}</strong><small class="{{ $p2['wn'] <= $p2['ln'] ? 'up' : 'down' }}">{{ $d($p2['wn'], $p2['ln']) ?: '0' }} missed objectives</small></div>
+    <div class="kpi"><label>Weekly Score</label><strong>{{ $p2['wScore'] }}%</strong><small class="{{ $p2['wScore'] >= $p2['lScore'] ? 'up' : 'down' }}">{{ $d($p2['wScore'], $p2['lScore']) ?: '0' }} points</small></div>
+    <div class="kpi"><label>Open Actions</label><strong>{{ $p2['open'] }}</strong><small>{{ $p2['soon'] }} due within 48 hours</small></div>
+  </div>
+  <article class="card" style="margin-bottom:17px"><div class="card-head"><div><h2>Monday Management Agenda</h2><p>One decision per exception—avoid reviewing healthy metrics in detail</p></div><span class="badge">Week {{ $p2['weekNo'] }}</span><button class="edit-fig" type="button" data-edit="weekly">Edit</button></div>
+    <div class="review-grid">
+      <article><h3>Sales & Enrollment</h3><ul><li>{{ $enroll['leads'] }} leads generated</li><li>{{ $enroll['enrolled'] }} students enrolled</li><li>{{ max(0, $enroll['funnel'][2]['value'] - $enroll['funnel'][3]['value']) }} qualified leads need consultation</li><li>Decision: {{ $w['sales'] ?: '—' }}</li></ul></article>
+      <article><h3>Operations & Quality</h3><ul><li>{{ $p2['utilNow'] }}% seat utilization</li><li>{{ $p2['completion'] === null ? '—' : $p2['completion'].'%' }} completion forecast</li><li>{{ $p2['eqDown'] ? $p2['eqDown'].' training station'.($p2['eqDown'] === 1 ? ' needs' : 's need').' service' : 'All training stations online' }}</li><li>Decision: {{ $w['ops'] ?: '—' }}</li></ul></article>
+      <article><h3>Finance & Capacity</h3><ul><li>{{ $p2['margin'] === null ? '—' : $p2['margin'].'%' }} gross margin</li><li>{{ $p2['reserve'] === null ? '—' : $p2['reserve'].'-month' }} cash reserve</li><li>${{ number_format($p2['costTotal']) }} costs this month</li><li>Decision: {{ $w['finance'] ?: '—' }}</li></ul></article>
+    </div>
+  </article>
+  <div class="grid equal">
+    <article class="card"><div class="card-head"><div><h2>Wins to Repeat</h2><p>Actions that created measurable progress</p></div></div>
+      @forelse($w['wins'] as $x)<label class="task done"><input type="checkbox" checked disabled><span>{{ $x }}</span></label>@empty<p class="deadline-note">No wins recorded this week — use Edit on the agenda.</p>@endforelse
+    </article>
+    <article class="card"><div class="card-head"><div><h2>Next Seven Days</h2><p>Critical commitments for the upcoming week</p></div></div>
+      @forelse($w['next'] as $x)<label class="task"><input type="checkbox" disabled><span>{{ $x }}</span></label>@empty<p class="deadline-note">No commitments recorded — use Edit on the agenda.</p>@endforelse
+    </article>
+  </div>
+</section>
 
         <section class="view" id="progress">
           <div class="management-hero"><div><small>MISSION CONTROL</small><h2>Progress Tracker</h2><p>Every objective begins as a planned Mission Focus task. Complete it to earn Mission Focus; miss it and that same task becomes Noise.</p></div><span class="badge" id="periodLabel">Today</span></div>
@@ -325,25 +337,23 @@
         </section>
 
         <section class="view" id="sops">
-          <div class="management-hero"><div><small>OPERATING SYSTEM</small><h2>SOP Library</h2><p>Document the repeatable procedures required to operate location one without founder intervention and eventually replicate the school.</p></div><span class="badge">18 of 24 complete</span></div>
-          <div class="kpis">
-            <div class="kpi"><label>SOP Completion</label><strong>75%</strong><small>18 of 24 approved</small></div>
-            <div class="kpi"><label>Needs Review</label><strong>3</strong><small>Owner approval required</small></div>
-            <div class="kpi"><label>In Draft</label><strong>3</strong><small>Assigned to operations</small></div>
-            <div class="kpi"><label>Founder-Only Functions</label><strong>3</strong><small class="down">Must be documented</small></div>
-          </div>
-          <article class="card">
-            <div class="card-head"><div><h2>Management Procedures</h2><p>Core documents needed for consistent operation</p></div><button class="save-button">+ New SOP</button></div>
-            <div class="sop-list">
-              <div class="sop-row"><div><strong>Facility Opening & Safety Walk</strong><small>OPS-001 · Operations</small></div><span>100%</span><div class="progress"><i style="width:100%"></i></div><span class="badge">Approved</span></div>
-              <div class="sop-row"><div><strong>Student Enrollment & Payment</strong><small>ADM-002 · Enrollment</small></div><span>90%</span><div class="progress"><i style="width:90%"></i></div><span class="badge warn">Review</span></div>
-              <div class="sop-row"><div><strong>Instructor Class Setup</strong><small>TRN-004 · Training</small></div><span>100%</span><div class="progress"><i style="width:100%"></i></div><span class="badge">Approved</span></div>
-              <div class="sop-row"><div><strong>Refund & Cancellation Handling</strong><small>FIN-006 · Finance</small></div><span>65%</span><div class="progress"><i style="width:65%"></i></div><span class="badge warn">Draft</span></div>
-              <div class="sop-row"><div><strong>Equipment Diagnostic Escalation</strong><small>OPS-010 · Maintenance</small></div><span>40%</span><div class="progress"><i style="width:40%"></i></div><span class="badge warn">Founder only</span></div>
-              <div class="sop-row"><div><strong>Facility Closeout & Cash Reconciliation</strong><small>OPS-012 · Operations</small></div><span>100%</span><div class="progress"><i style="width:100%"></i></div><span class="badge">Approved</span></div>
-            </div>
-          </article>
-        </section>
+  <div class="management-hero"><div><small>OPERATING SYSTEM</small><h2>SOP Library</h2><p>Document the repeatable procedures required to operate location one without founder intervention and eventually replicate the school.</p></div><span class="badge">{{ $p2['sopApproved'] }} of {{ $p2['sopTotal'] }} complete</span></div>
+  <div class="kpis">
+    <div class="kpi"><label>SOP Completion</label><strong>{{ $p2['sopPct'] }}%</strong><small>{{ $p2['sopApproved'] }} of {{ $p2['sopTotal'] }} approved</small></div>
+    <div class="kpi"><label>Needs Review</label><strong>{{ $p2['sopReview'] }}</strong><small>Owner approval required</small></div>
+    <div class="kpi"><label>In Draft</label><strong>{{ $p2['sopDraft'] }}</strong><small>Assigned to operations</small></div>
+    <div class="kpi"><label>Founder-Only Functions</label><strong>{{ $p2['sopFounder'] }}</strong><small class="{{ $p2['sopFounder'] ? 'down' : '' }}">Must be documented</small></div>
+  </div>
+  <article class="card"><div class="card-head"><div><h2>Management Procedures</h2><p>Core documents needed for consistent operation</p></div><button class="save-button" type="button" data-edit="sops">+ New SOP</button></div>
+    <div class="sop-list">
+      @forelse($p2['sops'] as $x)
+      <div class="sop-row"><div><strong>{{ $x['title'] }}</strong><small>{{ trim(($x['code'] ?? '').' · '.($x['area'] ?? ''), ' ·') }}</small></div><span>{{ $x['pct'] }}%</span><div class="progress"><i style="width:{{ $x['pct'] }}%"></i></div><span class="badge {{ $x['status'] === 'Approved' ? '' : 'warn' }}">{{ $x['status'] }}</span></div>
+      @empty
+      <p class="deadline-note">No procedures recorded yet — use + New SOP.</p>
+      @endforelse
+    </div>
+  </article>
+</section>
 
         <section class="view" id="targets">
           <div class="management-hero"><div><small>OWNER CONTROL LIMITS</small><h2>Owner Settings</h2><p>Set operating thresholds, enrollment rules, capacity, and payment controls. This section belongs only on Pete's owner dashboard.</p></div><span class="badge" id="targetSaved">Owner only</span></div>
@@ -403,6 +413,15 @@
     </form>
   </div>
 
+  <div class="modal-backdrop" id="figModal" hidden>
+    <form class="modal-box fig-box" id="figForm">
+      <h2 id="figTitle">Edit</h2>
+      <p id="figHelp"></p>
+      <div id="figFields"></div>
+      <p class="modal-error" id="figError"></p>
+      <div class="modal-actions"><button type="button" id="figCancel">Cancel</button><button type="submit">Save</button></div>
+    </form>
+  </div>
   <script>window.PTT = @json($bootstrap);</script>
   <script src="{{ \App\Support\Asset::url('js/owner.js') }}"></script>
 </body>

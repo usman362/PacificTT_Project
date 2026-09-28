@@ -65,8 +65,8 @@
   const utilSlider = $('utilSlider'), managerCheck = $('managerCheck');
   function updateReadiness() {
     const utilization = Number(utilSlider.value);
-    const utilPass = utilization >= 80, managerPass = managerCheck.checked;
-    const passed = 4 + (utilPass ? 1 : 0) + (managerPass ? 1 : 0);
+    const utilPass = utilization >= Number(window.PTT.targetUtil || 80), managerPass = managerCheck.checked;
+    const passed = Number(window.PTT.gatesBase || 0) + (utilPass ? 1 : 0) + (managerPass ? 1 : 0);
     $('utilValue').textContent = utilization + '%';
     $('utilDetail').textContent = utilization + '% current';
     $('gateScore').textContent = passed + ' / 6 passed';
@@ -81,6 +81,7 @@
   }
   utilSlider?.addEventListener('input', updateReadiness);
   managerCheck?.addEventListener('change', updateReadiness);
+  if (utilSlider) updateReadiness();
 
   /* ── live channel: Assistant metrics, alerts, today's missions ───── */
   let liveRevision = null;
@@ -374,4 +375,141 @@
   setInterval(() => { if (!document.hidden) refreshLive(); }, 5000);
   setInterval(() => { if (expireLocally()) renderProgress(); }, 15000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { refreshLive(); loadObjectives(); } });
+})();
+
+/* ── Owner-entered figures (A1 part 2) ─────────────────────────────── */
+(function () {
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  const R = window.PTT.routes;
+  const F = window.PTT.figures || {};
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const monthKey = (() => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); })();
+
+  // Each form: plain fields, or a list of rows the owner can add to and remove.
+  const forms = {
+    equipment: { title: 'Equipment Status', help: 'Training stations and how many are online today.',
+      list: 'equipment', cols: [['name', 'Station', 'text', '2fr'], ['online', 'Online', 'number', '1fr'], ['total', 'Total', 'number', '1fr']],
+      blank: { name: '', online: 0, total: 1 } },
+    quality: { title: 'Quality Controls', help: 'Delivery measures for the current period.',
+      fields: [['modules_done', 'Modules completed', 'number'], ['modules_total', 'Modules planned', 'number'],
+               ['assessments', 'Skills assessments passed (%)', 'number'], ['safety', 'Safety compliance (%)', 'number']],
+      values: () => F.quality || {} },
+    costs: { title: 'Operating Costs', help: 'This month\'s costs. Gross margin, cash reserve and cost per lead are calculated from these (name a line "Advertising" for cost per lead).',
+      list: 'costs', cols: [['name', 'Cost', 'text', '2fr'], ['amount', 'Amount ($)', 'number', '1fr']],
+      rows: () => (F.costs || {})[monthKey] || [], blank: { name: '', amount: 0 } },
+    finance: { title: 'Finance Inputs', help: 'Cash reserve and revenue the system does not collect itself.',
+      fields: [['reserve_cash', 'Unrestricted cash reserve ($)', 'number'], ['profitable_months', 'Profitable months in a row', 'number'],
+               ['specialty', 'Specialty training revenue this month ($)', 'number'], ['b2b', 'B2B training revenue this month ($)', 'number']],
+      values: () => ({ reserve_cash: F.reserve_cash, profitable_months: F.profitable_months, specialty: (F.engines || {}).specialty, b2b: (F.engines || {}).b2b }) },
+    satisfaction: { title: 'Student Satisfaction', help: 'Latest survey result.',
+      fields: [['score', 'Average score (out of 5)', 'number'], ['responses', 'Responses', 'number']], values: () => F.satisfaction || {} },
+    safety: { title: 'Safety Streak', help: 'The streak counts days since the last incident.',
+      fields: [['last_incident', 'Last incident date', 'date'], ['incidents', 'Incidents this year', 'number']], values: () => F.safety || {} },
+    dependency: { title: 'Owner Dependency', help: 'Functions only the owner handles today, and which have been handed off.',
+      list: 'dependency', cols: [['name', 'Function', 'text', '2fr'], ['delegated', 'Status', 'delegated', '1fr']],
+      blank: { name: '', delegated: false } },
+    growth: { title: 'Growth Phase', help: 'Where the business is on the five-year plan.',
+      fields: [['phase', 'Current phase', 'phase'], ['pct', 'Phase complete (%)', 'number'],
+               ['manager_verified', 'A location manager can run five days without the owner', 'check']],
+      values: () => F.growth || {} },
+    weekly: { title: 'Weekly Review', help: 'One decision per area, then this week\'s wins and next week\'s commitments (one per line).',
+      fields: [['sales', 'Sales & Enrollment decision', 'text'], ['ops', 'Operations & Quality decision', 'text'], ['finance', 'Finance & Capacity decision', 'text'],
+               ['wins', 'Wins to repeat', 'lines'], ['next', 'Next seven days', 'lines']],
+      values: () => F.weekly || {} },
+    sops: { title: 'SOP Library', help: 'Add, edit or remove procedures.',
+      list: 'sops', cols: [['title', 'Procedure', 'text', '2.2fr'], ['code', 'Code', 'text', '.9fr'], ['area', 'Area', 'text', '1fr'], ['pct', '%', 'number', '.6fr'], ['status', 'Status', 'sopstatus', '1.2fr']],
+      blank: { title: '', code: '', area: '', pct: 0, status: 'Draft' } }
+  };
+
+  function input(type, name, value, label) {
+    if (type === 'delegated') return `<select name="${name}"><option value="0"${value ? '' : ' selected'}>Founder only</option><option value="1"${value ? ' selected' : ''}>Delegated</option></select>`;
+    if (type === 'sopstatus') return `<select name="${name}">${(window.PTT.sopStatuses || []).map(s => `<option${s === value ? ' selected' : ''}>${esc(s)}</option>`).join('')}</select>`;
+    if (type === 'phase') return `<select name="${name}">${[1, 2, 3, 4, 5].map(n => `<option value="${n}"${Number(value) === n ? ' selected' : ''}>Year ${n}</option>`).join('')}</select>`;
+    if (type === 'lines') return `<textarea name="${name}">${esc((value || []).join('\n'))}</textarea>`;
+    return `<input name="${name}" type="${type}" ${type === 'number' ? 'step="any" min="0"' : ''} value="${esc(value ?? '')}"${label ? ` placeholder="${esc(label)}" aria-label="${esc(label)}"` : ''}>`;
+  }
+
+  let current = null;
+  function rowHtml(def, row) {
+    const tpl = def.cols.map(c => c[3]).join(' ') + ' auto';
+    return `<div class="fig-row" style="grid-template-columns:${tpl}">` +
+      def.cols.map(c => input(c[2], c[0], row[c[0]], c[1])).join('') + '<button type="button" data-remove>Remove</button></div>';
+  }
+
+  function open(group) {
+    const def = forms[group]; if (!def) return;
+    current = group;
+    $('figTitle').textContent = def.title;
+    $('figHelp').textContent = def.help;
+    $('figError').textContent = '';
+    if (def.list) {
+      const rows = def.rows ? def.rows() : (F[def.list] || []);
+      const tpl = def.cols.map(c => c[3]).join(' ') + ' auto';
+      $('figFields').innerHTML = `<div class="fig-head" style="grid-template-columns:${tpl}">${def.cols.map(c => `<span>${esc(c[1])}</span>`).join('')}<span></span></div>` +
+        `<div class="fig-rows" id="figRows">${rows.map(r => rowHtml(def, r)).join('')}</div><button type="button" class="fig-add" id="figAdd">+ Add</button>`;
+      $('figAdd').onclick = () => { $('figRows').insertAdjacentHTML('beforeend', rowHtml(def, def.blank)); };
+      if (group === 'sops' && !rows.length) $('figAdd').click();
+    } else {
+      const v = def.values();
+      $('figFields').innerHTML = def.fields.map(([k, label, type]) => type === 'check'
+        ? `<label class="fig-check fig-field"><input type="checkbox" name="${k}"${v[k] ? ' checked' : ''}> ${esc(label)}</label>`
+        : `<div class="fig-field"><label>${esc(label)}</label>${input(type, k, v[k])}</div>`).join('');
+    }
+    $('figModal').hidden = false;
+  }
+
+  function collect() {
+    const def = forms[current];
+    const num = (t, v) => (t === 'number' ? (v === '' ? null : Number(v)) : v);
+    if (def.list) {
+      return { [def.list]: [...document.querySelectorAll('#figRows .fig-row')].map(row => {
+        const o = {};
+        def.cols.forEach(([k, , t]) => {
+          const el = row.querySelector(`[name="${k}"]`);
+          o[k] = t === 'delegated' ? el.value === '1' : num(t, el.value.trim());
+        });
+        return o;
+      }) };
+    }
+    const o = {};
+    def.fields.forEach(([k, , t]) => {
+      const el = $('figFields').querySelector(`[name="${k}"]`);
+      o[k] = t === 'check' ? el.checked : t === 'lines' ? el.value.split('\n').map(x => x.trim()).filter(Boolean)
+           : t === 'phase' ? Number(el.value) : num(t, el.value.trim());
+    });
+    return o;
+  }
+
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-edit]');
+    if (b) { e.preventDefault(); open(b.dataset.edit); return; }
+    const rm = e.target.closest('[data-remove]');
+    if (rm) rm.closest('.fig-row').remove();
+  });
+  $('figCancel').addEventListener('click', () => { $('figModal').hidden = true; });
+  $('figForm').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    $('figError').textContent = '';
+    try {
+      const res = await fetch(R.figures.replace('__GROUP__', current), {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json',
+                   'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '' },
+        body: JSON.stringify(collect()), credentials: 'same-origin'
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.message || 'Could not save.');
+      // Figures feed several cards; reload onto the same view to show them all.
+      sessionStorage.setItem('pttOwnerView', document.querySelector('nav button[data-view].active')?.dataset.view || 'overview');
+      location.reload();
+    } catch (err) { $('figError').textContent = err.message; }
+  });
+
+  // Return to the view that was being edited.
+  try {
+    const v = sessionStorage.getItem('pttOwnerView');
+    if (v) { sessionStorage.removeItem('pttOwnerView'); document.querySelector(`nav button[data-view="${v}"]`)?.click(); }
+  } catch (e) { /* storage unavailable: stay on the Command Center */ }
 })();

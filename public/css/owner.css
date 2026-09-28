@@ -271,6 +271,32 @@
     }
   
 
+/* ── Owner-entered figures ──────────────────────────────────────────
+   The small Edit control on cards whose numbers only the owner knows, and
+   the edit dialog, both built from the dashboard's own tokens and modal. */
+.edit-fig { margin-left: 8px; height: 26px; padding: 0 9px; border: 1px solid var(--line); background: #fff; color: var(--ink); font-size: .6rem; font-weight: 800; letter-spacing: .04em; cursor: pointer; }
+.edit-fig:hover { border-color: var(--lime); }
+.kpi label .edit-fig { float: right; margin: -4px 0 0; height: 22px; padding: 0 7px; }
+.phase .edit-fig { margin: 10px 0 0; }
+.card-head .edit-fig { align-self: flex-start; }
+.fig-box { width: min(620px, 100%); max-height: 88vh; overflow: auto; }
+.fig-box input, .fig-box select, .fig-box textarea { width: 100%; height: 38px; padding: 0 9px; border: 1px solid var(--line); background: #fff; font: inherit; font-size: .75rem; }
+.fig-box textarea { height: 96px; padding: 8px 9px; resize: vertical; }
+.fig-box .fig-field { margin-bottom: 11px; }
+.fig-box .fig-check { display: flex; gap: 8px; align-items: center; font-size: .72rem; font-weight: 700; }
+.fig-box .fig-check input { width: auto; height: auto; }
+.fig-rows { display: grid; gap: 7px; margin-bottom: 9px; }
+.fig-row { display: grid; gap: 6px; align-items: center; }
+.fig-row button, .fig-add { height: 34px; padding: 0 10px; border: 1px solid var(--line); background: #fff; font-size: .66rem; font-weight: 800; cursor: pointer; }
+.fig-head { display: grid; gap: 6px; font-size: .58rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+
+/* Every table carried min-width:700px, so a two-column card holding a simple
+   table grew to 740px and pushed Training Operations sideways on a 1440px
+   desktop (the design file does the same). The wide minimum stays where the
+   design wraps a table to scroll (.table-wrap); a table set straight in a
+   card fits its card. */
+.card > table { min-width: 0; }
+
 /* ── Phones ─────────────────────────────────────────────────────────
    A grid column sized 1fr still grows to fit its widest table, so on a phone
    one wide table pushed the whole page sideways (the design does the same).
@@ -279,4 +305,10 @@
 @media (max-width: 720px) {
   .grid, .grid.equal { grid-template-columns: minmax(0, 1fr); }
   .card { min-width: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+@media (max-width: 720px) {
+  /* List editors: each row wraps onto two lines instead of five slivers. */
+  .fig-head { display: none; }
+  .fig-row { grid-template-columns: 1fr 1fr !important; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .fig-row > :first-child { grid-column: 1 / -1; }
 }
