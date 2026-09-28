@@ -32,7 +32,9 @@ class AdminAuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('admin.dashboard'));
+        // The owner lands on the Operations Dashboard, everyone else on the
+        // Assistant Command console.
+        return redirect()->intended(Auth::user()->isOwner() ? route('admin.owner.dashboard') : route('admin.dashboard'));
     }
 
     public function logout(Request $request): RedirectResponse

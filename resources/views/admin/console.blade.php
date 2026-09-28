@@ -29,6 +29,10 @@
     <div class="navgroup">FINANCE</div>
     <button data-page="payments">Payments</button>
     <button data-page="reports">Reports</button>
+@if(auth()->user()?->isOwner())
+<div class="navgroup">OWNER</div>
+<button data-href="{{ route('admin.owner.dashboard') }}">Owner Dashboard</button>
+@endif
   </nav>
   <div class="foot">PacificTT.com<br>© 2026 PACIFIC TRADE TECH™</div>
 </aside>

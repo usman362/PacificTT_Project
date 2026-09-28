@@ -17,8 +17,9 @@ function pttPost(url, payload) {
 }
 
 const pages=[...document.querySelectorAll('.page')];
-document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
- document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+document.querySelectorAll('#nav button[data-href]').forEach(b=>b.onclick=()=>{location.href=b.dataset.href});
+document.querySelectorAll('#nav button[data-page]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('#nav button[data-page]').forEach(x=>x.classList.remove('active'));b.classList.add('active');
  pages.forEach(p=>p.classList.remove('active'));document.getElementById(b.dataset.page).classList.add('active');
  document.getElementById('pageTitle').textContent=b.textContent;window.scrollTo({top:0,behavior:'smooth'});
  if(b.dataset.page==='schedule') renderSchedule();

@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // The owner's settings override .env/config for every request.
+        \App\Support\OwnerSettings::apply();
     }
 }

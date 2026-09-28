@@ -39,7 +39,15 @@ Card details are collected by **Stripe Elements** in the browser and exchanged f
 PaymentIntent. No card number, expiry or CVC ever reaches this application or its
 database — only Stripe's identifiers and the brand/last four are stored.
 
-Add to `.env`:
+**The owner enters the keys in the Owner Dashboard → Owner Settings** (publishable
+key, secret key, webhook signing secret). They are stored encrypted with the app
+key, shown back only as `sk_live_…4f3a`, must match the payment mode (live keys
+for Live, test keys for Test), and take effect immediately. Setting the mode to
+Disabled, or choosing a merchant other than Stripe, switches card checkout off.
+Seats per instructor, the deposit percentage and the seat-hold time are set in
+the same place.
+
+Keys in `.env` are only a fallback for when none are saved there:
 
 ```
 STRIPE_KEY=pk_live_...
